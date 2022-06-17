@@ -1,17 +1,17 @@
 import React from "react";
-import {Container, Grid} from "@nextui-org/react";
+import {Container, Grid, theme, Text} from "@nextui-org/react";
 
 const Footer = () => {
 
     return (
-        <div style={{background: "lightyellow"}}>
+        <div style={{background: theme.colors.accents9.computedValue, marginTop: "auto"}}>
 
             <Container>
 
                 <Grid.Container gap={2}>
 
                     <Grid>
-                        Footer
+                        <Text color={"white"}>Built with 💜 by Tokr Labs</Text>
                     </Grid>
 
                 </Grid.Container>
