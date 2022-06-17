@@ -1,8 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { Metaplex, Nft } from "@metaplex-foundation/js";
-import { Connection, clusterApiUrl, PublicKey } from "@solana/web3.js";
-import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
+import { Nft } from "@metaplex-foundation/js";
+import { PublicKey } from "@solana/web3.js";
 import { metaplex, MissingArgs } from "../constants";
 
 type Data = {
