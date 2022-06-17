@@ -8,7 +8,7 @@ const Footer = () => {
 
             <Container>
 
-                <Grid.Container gap={2}>
+                <Grid.Container gap={2} style={{marginBottom: 0, paddingBottom: 0}}>
 
                     <Grid>
                         <Text color={"white"}>Built with 💜 by Tokr Labs</Text>
