@@ -1,12 +1,19 @@
 import type {NextPage} from 'next'
-import {WalletMultiButton} from "@solana/wallet-adapter-react-ui";
-import {Card, Container, Grid, Input, Spacer, Textarea, Text, Radio, Checkbox, Button} from "@nextui-org/react";
-import {bundlrStorage, Metaplex, walletAdapterIdentity} from "@metaplex-foundation/js";
+import {Button, Card, Checkbox, Container, Grid, Image, Input, Spacer, Text, Textarea} from "@nextui-org/react";
+import {
+    bundlrStorage,
+    CreateNftInput,
+    Metaplex,
+    Nft,
+    useMetaplexFileFromBrowser,
+    walletAdapterIdentity
+} from "@metaplex-foundation/js";
 import {useConnection, useWallet} from "@solana/wallet-adapter-react";
 import {clusterApiUrl} from "@solana/web3.js";
 import {WalletAdapterNetwork} from "@solana/wallet-adapter-base";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
+import {useState} from "react";
 
 const Home: NextPage = () => {
 
@@ -20,6 +27,42 @@ const Home: NextPage = () => {
             providerUrl: clusterApiUrl(WalletAdapterNetwork.Devnet),
             timeout: 60000,
         }))
+
+    const [name, setName] = useState<string>()
+    const [symbol, setSymbol] = useState<string>()
+    const [description, setDescription] = useState<string>()
+    const [isMutable, setIsMutable] = useState<boolean>(true)
+    const [image, setImage] = useState<File>()
+    const [nft, setNft] = useState<Nft>()
+
+    const createNft = async () => {
+
+        const {uri} = await mx.nfts().uploadMetadata({
+            name,
+            symbol,
+            description,
+            // image: await useMetaplexFileFromBrowser(image!),
+            seller_fee_basis_points: 0,
+        })
+
+        const {nft} = await mx.nfts().create({
+            uri: uri,
+            isMutable
+        } as CreateNftInput)
+
+        setNft(nft)
+
+    }
+
+    const handleClick = async () => {
+
+        if (!walletAdapter.connected) {
+            await walletAdapter.connect()
+        }
+
+        await createNft()
+
+    }
 
     return (
         <>
@@ -40,19 +83,25 @@ const Home: NextPage = () => {
 
                             <Card.Body>
 
-                                <Input label={"Name"}/>
+                                <Input label={"Name"} onChange={e => {
+                                    setName(e.target.value)
+                                }}/>
 
                                 <Spacer y={1}/>
 
-                                <Input label={"Symbol"}/>
+                                <Input label={"Symbol"} onChange={e => {
+                                    setSymbol(e.target.value)
+                                }}/>
 
                                 <Spacer y={1}/>
 
-                                <Textarea label={"Description"}/>
+                                <Textarea label={"Description"} onChange={e => {
+                                    setDescription(e.target.value)
+                                }}/>
 
                                 <Spacer y={1}/>
 
-                                <Checkbox defaultSelected={true}>
+                                <Checkbox defaultSelected={true} onChange={setIsMutable}>
                                     Updatable
                                 </Checkbox>
 
@@ -72,7 +121,20 @@ const Home: NextPage = () => {
 
                             <Card.Body>
 
-                                <input type={"file"}/>
+                                <input type={"file"} onChange={e => {
+                                    if (!e.target.files) return;
+                                    setImage(e.target.files[0])
+                                }}/>
+
+                                {image && (
+                                    <Image
+                                        src={URL.createObjectURL(image)}
+                                        alt={"Uploaded image"}
+                                        height={200}
+                                        width={200}
+                                        showSkeleton={true}
+                                    />
+                                )}
 
                             </Card.Body>
 
@@ -82,7 +144,12 @@ const Home: NextPage = () => {
 
                     <Grid xs={12} justify={"flex-end"}>
 
-                        <Button>Create NFT</Button>
+                        <Button
+                            disabled={!(name && symbol && description && walletAdapter.connected)}
+                            onClick={handleClick}
+                        >
+                            Create NFT
+                        </Button>
 
                     </Grid>
 
