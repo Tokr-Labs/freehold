@@ -4,7 +4,7 @@ import {Container, Grid} from "@nextui-org/react";
 const Footer = () => {
 
     return (
-        <Container fluid={true} style={{background: "lightyellow"}}>
+        <div style={{background: "lightyellow"}}>
 
             <Container>
 
@@ -18,7 +18,7 @@ const Footer = () => {
 
             </Container>
 
-        </Container>
+        </div>
     )
 
 }

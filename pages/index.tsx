@@ -41,7 +41,8 @@ const Home: NextPage = () => {
             name,
             symbol,
             description,
-            // image: await useMetaplexFileFromBrowser(image!),
+            // eslint-disable-next-line react-hooks/rules-of-hooks
+            image: await useMetaplexFileFromBrowser(image!),
             seller_fee_basis_points: 0,
         })
 
@@ -145,7 +146,7 @@ const Home: NextPage = () => {
                     <Grid xs={12} justify={"flex-end"}>
 
                         <Button
-                            disabled={!(name && symbol && description && walletAdapter.connected)}
+                            disabled={!(name && symbol && description && image && walletAdapter.connected)}
                             onClick={handleClick}
                         >
                             Create NFT

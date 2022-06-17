@@ -5,7 +5,7 @@ import {WalletMultiButton} from "@solana/wallet-adapter-react-ui";
 const Navbar = () => {
 
     return (
-        <Container fluid={true} style={{background: "lightcyan"}}>
+        <div style={{background: "lightcyan"}}>
 
             <Container>
 
@@ -21,7 +21,7 @@ const Navbar = () => {
 
             </Container>
 
-        </Container>
+        </div>
     )
 
 }
