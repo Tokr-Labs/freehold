@@ -6,7 +6,7 @@ import Link from "next/link";
 const Navbar = () => {
 
     return (
-        <div style={{background: theme.colors.accents1.computedValue}}>
+        <div style={{background: theme.colors.accents0.computedValue}}>
 
             <Container>
 

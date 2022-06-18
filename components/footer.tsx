@@ -1,18 +1,29 @@
 import React from "react";
-import {Container, Grid, theme, Text, Image, useTheme} from "@nextui-org/react";
+import {Container, Grid, Image, Switch, Text, theme, useTheme} from "@nextui-org/react";
+import {useTheme as useNextTheme} from "next-themes";
 
 const Footer = () => {
 
+    const {setTheme} = useNextTheme()
     const isDark = useTheme().isDark
 
     return (
-        <div style={{background: theme.colors.accents1.computedValue, marginTop: "auto"}}>
+        <div style={{background: theme.colors.accents0.computedValue, marginTop: "auto"}}>
 
             <Container>
 
                 <Grid.Container gap={2} style={{marginBottom: 0, paddingBottom: 0}}>
 
-                    <Grid xs={6}>
+                    <Grid xs={3}>
+                        <Switch
+                            checked={isDark}
+                            onChange={e => {
+                                setTheme(e.target.checked ? "dark" : "light")
+                            }}
+                        />
+                    </Grid>
+
+                    <Grid xs={3}>
                         <Text>
                             Built with 💜 by&nbsp;
                             <a href={"https://tokrlabs.xyz"}
