@@ -10,6 +10,9 @@ type Data = {
     error?: string
 }
 
+// example POST:
+// api/nft/print/2eqiaDuGJNrBniLR2D9YADJfsC9FzyPnfo159L6LKR6G
+// creates a print NFT (copy) of the provided master NFT
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<Data>
