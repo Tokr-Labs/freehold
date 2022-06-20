@@ -1,5 +1,5 @@
 import React from "react";
-import {Container, Grid, Image, Switch, Text, theme, useTheme} from "@nextui-org/react";
+import {Container, Grid, Switch, Text, theme, useTheme} from "@nextui-org/react";
 import {useTheme as useNextTheme} from "next-themes";
 
 const Footer = () => {
@@ -14,7 +14,7 @@ const Footer = () => {
 
                 <Grid.Container gap={2} style={{marginBottom: 0, paddingBottom: 0}}>
 
-                    <Grid xs={3}>
+                    <Grid xs={4}>
                         <Switch
                             checked={isDark}
                             onChange={e => {
@@ -23,7 +23,7 @@ const Footer = () => {
                         />
                     </Grid>
 
-                    <Grid xs={3}>
+                    <Grid xs={4} justify={"center"}>
                         <Text>
                             Built with 💜 by&nbsp;
                             <a href={"https://tokrlabs.xyz"}
@@ -36,22 +36,24 @@ const Footer = () => {
                         </Text>
                     </Grid>
 
-                    <Grid xs={6} justify={"flex-end"} alignItems={"center"}>
+                    <Grid xs={4} justify={"flex-end"} alignItems={"center"}>
                         <span>Powered by</span>
-                        <Image
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
                             src={`../metaplex_logo_${isDark ? "dark.png" : "light.png"}`}
                             alt={"Metaplex logo"}
-                            height={20}
+                            height={14}
                             width={"auto"}
-                            style={{display: "inline"}}
+                            style={{margin: "0 8px"}}
                         />
                         <span>on</span>
-                        <Image
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
                             src={`../solana_logo_${isDark ? "dark.png" : "light.png"}`}
                             alt={"Solana logo"}
-                            height={30}
+                            height={16}
                             width={"auto"}
-                            style={{display: "inline"}}
+                            style={{margin: "0 8px"}}
                         />
                     </Grid>
 
