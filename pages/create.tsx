@@ -71,7 +71,7 @@ const Create: NextPage = () => {
 
             <Navbar/>
 
-            <Container>
+            <Container style={{marginTop: "auto"}}>
 
                 <Grid.Container gap={2}>
 
@@ -104,7 +104,7 @@ const Create: NextPage = () => {
                                 <Spacer y={1}/>
 
                                 <Checkbox defaultSelected={true} onChange={setIsMutable}>
-                                    Updatable
+                                    <Text size={14}>Updatable</Text>
                                 </Checkbox>
 
                             </Card.Body>
@@ -123,10 +123,14 @@ const Create: NextPage = () => {
 
                             <Card.Body>
 
-                                <input type={"file"} onChange={e => {
-                                    if (!e.target.files) return;
-                                    setImage(e.target.files[0])
-                                }}/>
+                                <input
+                                    type={"file"}
+                                    accept={"image/png, image/jpeg"}
+                                    onChange={e => {
+                                        if (!e.target.files) return;
+                                        setImage(e.target.files[0])
+                                    }}
+                                />
 
                                 {image && (
                                     <Image
