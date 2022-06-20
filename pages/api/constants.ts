@@ -8,7 +8,7 @@ import * as bs58 from "bs58";
 export const connection = new Connection(clusterApiUrl(WalletAdapterNetwork.Devnet));
 export const metaplex = new Metaplex(connection);
 
-const adminWallet = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_PRIVATE_KEY!));
+export const adminWallet = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_PRIVATE_KEY!));
 export const signable_metaplex = new Metaplex(connection).use(keypairIdentity(adminWallet));
 
 // generic response types
