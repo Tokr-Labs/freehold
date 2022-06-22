@@ -11,7 +11,7 @@ import {
     walletAdapterIdentity
 } from "@metaplex-foundation/js";
 import PageWrapper from "../components/page-wrapper";
-import { MetaplexContext } from "./context";
+import { MetaplexContext } from "./util/context";
 
 const Create: NextPage = () => {
     const walletAdapter = useWallet();
