@@ -18,6 +18,7 @@ export default async function handler(
     res: NextApiResponse<Data | MissingArgs>
 ) {
     const { query: { user, collection }, method } = req;
+    const metadata: boolean = req.query.metadata === 'true';
     switch (method) {
         case 'GET':
             // validate that a user was provided
@@ -34,9 +35,11 @@ export default async function handler(
                 nfts = nfts.filter(nft => { return nft.collection?.key.equals(new PublicKey(collection)) });
             }
 
-            // fetch metadata for each NFT
-            for (let i = 0; i < nfts.length; i++) {
-                await nfts[i].metadataTask.run();
+            if (metadata === true) {
+                // fetch metadata for each NFT
+                for (let i = 0; i < nfts.length; i++) {
+                    await nfts[i].metadataTask.run();
+                }
             }
 
             res.status(200).json({ user: user as string, nfts });
