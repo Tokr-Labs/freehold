@@ -4,6 +4,7 @@ import { Nft } from "@metaplex-foundation/js";
 import { PublicKey } from "@solana/web3.js";
 import { metaplex, MissingArgs } from "../constants";
 import { getMetaplex, getSolanaConnection } from '../util';
+import {runMiddleware} from "../../../utils/run-middleware";
 
 type Data = {
     user: string,
@@ -25,7 +26,9 @@ export default async function handler(
 
     // use specific network, if provided by the request. otherwise use the default
     const mx = network ? getMetaplex(getSolanaConnection(network)) : metaplex;
-
+    
+    await runMiddleware(["GET"], req, res)
+    
     // handle the request -- fetching user's NFTs w/ optional collection filter
     switch (method) {
         case 'GET':
@@ -43,7 +46,7 @@ export default async function handler(
                 nfts = nfts.filter(nft => { return nft.collection?.key.equals(new PublicKey(collection)) });
             }
 
-            if (metadata === true) {
+            if (metadata) {
                 // fetch metadata for each NFT
                 for (let i = 0; i < nfts.length; i++) {
                     await nfts[i].metadataTask.run();
