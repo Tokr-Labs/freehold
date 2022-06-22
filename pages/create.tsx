@@ -1,33 +1,23 @@
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import {NextPage} from "next";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
 import {Button, Card, Checkbox, Container, Grid, Image, Input, Spacer, Text, Textarea} from "@nextui-org/react";
-import {useConnection, useWallet} from "@solana/wallet-adapter-react";
+import { useWallet } from "@solana/wallet-adapter-react";
 import {
-    bundlrStorage,
     CreateNftInput,
-    Metaplex,
     Nft,
     useMetaplexFileFromBrowser,
     walletAdapterIdentity
 } from "@metaplex-foundation/js";
-import {clusterApiUrl} from "@solana/web3.js";
-import {WalletAdapterNetwork} from "@solana/wallet-adapter-base";
 import PageWrapper from "../components/page-wrapper";
+import { MetaplexContext } from "./context";
 
 const Create: NextPage = () => {
-
-    const {connection} = useConnection();
     const walletAdapter = useWallet();
 
-    const mx = Metaplex.make(connection)
-        .use(walletAdapterIdentity(walletAdapter))
-        .use(bundlrStorage({
-            address: "https://devnet.bundlr.network",
-            providerUrl: clusterApiUrl(WalletAdapterNetwork.Devnet),
-            timeout: 60000,
-        }))
+    // attach the wallet/signer to the metaplex instance
+    const mx = useContext(MetaplexContext).metaplex.use(walletAdapterIdentity(walletAdapter));
 
     const [name, setName] = useState<string>()
     const [symbol, setSymbol] = useState<string>()
