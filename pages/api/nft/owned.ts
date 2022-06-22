@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { Nft } from "@metaplex-foundation/js";
 import { PublicKey } from "@solana/web3.js";
 import { metaplex, MissingArgs } from "../constants";
+import {runMiddleware} from "../../../utils/run-middleware";
 
 type Data = {
     user: string,
@@ -19,6 +20,9 @@ export default async function handler(
 ) {
     const { query: { user, collection }, method } = req;
     const metadata: boolean = req.query.metadata === 'true';
+
+    await runMiddleware(["GET"], req, res)
+
     switch (method) {
         case 'GET':
             // validate that a user was provided
@@ -28,14 +32,14 @@ export default async function handler(
             }
             
             // obtain user's list of metaplex NFTs
-            var nfts: Nft[] = await metaplex.nfts().findAllByOwner(new PublicKey(user));
-            
+            let nfts: Nft[] = await metaplex.nfts().findAllByOwner(new PublicKey(user));
+
             // if a collection was provided, filter the list of NFTs for the collection
             if (collection) {
                 nfts = nfts.filter(nft => { return nft.collection?.key.equals(new PublicKey(collection)) });
             }
 
-            if (metadata === true) {
+            if (metadata) {
                 // fetch metadata for each NFT
                 for (let i = 0; i < nfts.length; i++) {
                     await nfts[i].metadataTask.run();
