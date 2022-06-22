@@ -11,7 +11,7 @@ import {lightTheme} from "../styles/light-theme";
 import {darkTheme} from "../styles/dark-theme";
 import {ThemeProvider} from "next-themes";
 import { bundlrStorage, Metaplex } from '@metaplex-foundation/js';
-import { ConnectionContext, MetaplexContext, NetworkContext } from './context';
+import { ConnectionContext, MetaplexContext, NetworkContext } from './util/context';
 
 require('@solana/wallet-adapter-react-ui/styles.css');
 
