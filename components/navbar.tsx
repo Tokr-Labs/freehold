@@ -11,6 +11,8 @@ const Navbar = () => {
 
     const [selected, setSelected] = useState("devnet");
 
+    const [selectedKeys, setSelectedKeys] = useState(new Set(["devnet"]));
+
     return (
         <div style={{background: theme.colors.accents0.computedValue}}>
 
@@ -39,8 +41,11 @@ const Navbar = () => {
                                 aria-label="network selection"
                                 disallowEmptySelection
                                 selectionMode="single"
-                                selectedKeys={selected}
+                                selectedKeys={selectedKeys}
                                 onSelectionChange={keys => {
+                                    // @ts-ignore
+                                    setSelectedKeys(keys)
+
                                     // @ts-ignore
                                     const [selection] = keys
                                     setSelected(selection)
