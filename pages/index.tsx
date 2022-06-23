@@ -1,7 +1,5 @@
 import type {NextPage} from 'next'
 import {Card, Container, Grid, Image, Text} from "@nextui-org/react";
-import Navbar from "../components/navbar";
-import Footer from "../components/footer";
 import Link from "next/link";
 import PageWrapper from "../components/page-wrapper";
 
@@ -9,8 +7,6 @@ const Home: NextPage = () => {
 
     return (
         <PageWrapper>
-
-            <Navbar/>
 
             <Container>
 
@@ -59,9 +55,9 @@ const Home: NextPage = () => {
 
                             <Grid xs={6}>
 
-                                {/*<Link href={"/explore"}>*/}
+                                <Link href={"/explore"}>
 
-                                    <Card isHoverable={true} isPressable={false}>
+                                    <Card isHoverable={true} isPressable={true}>
 
                                         <Card.Header>
                                             <Text h3 weight={"bold"}>Explore</Text>
@@ -75,7 +71,7 @@ const Home: NextPage = () => {
 
                                     </Card>
 
-                                {/*</Link>*/}
+                                </Link>
 
                             </Grid>
 
@@ -95,8 +91,6 @@ const Home: NextPage = () => {
                 </Grid.Container>
 
             </Container>
-
-            <Footer/>
 
         </PageWrapper>
     )
