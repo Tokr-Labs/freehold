@@ -2,7 +2,7 @@ import type {AppProps} from 'next/app'
 import {NextUIProvider} from "@nextui-org/react";
 import {ConnectionProvider, useConnection, useWallet, WalletProvider} from "@solana/wallet-adapter-react";
 import {WalletAdapterNetwork} from "@solana/wallet-adapter-base";
-import {clusterApiUrl} from "@solana/web3.js";
+import {clusterApiUrl, Connection} from "@solana/web3.js";
 import {WalletModalProvider} from "@solana/wallet-adapter-react-ui";
 import {useEffect, useMemo, useState} from "react";
 import {PhantomWalletAdapter} from "@solana/wallet-adapter-wallets";
@@ -18,13 +18,16 @@ require('@solana/wallet-adapter-react-ui/styles.css');
 
 function MyApp({Component, pageProps}: AppProps) {
 
-    const {connection} = useConnection();
-
     const [network, setNetwork] = useState<WalletAdapterNetwork>(
         process.env.VERCEL_ENV === 'production'
             ? WalletAdapterNetwork.Mainnet
             : WalletAdapterNetwork.Devnet
     );
+
+    const connection = useMemo(
+        () => new Connection(clusterApiUrl(network)),
+        [network]
+    )
 
     const walletAdapter = useWallet();
 
