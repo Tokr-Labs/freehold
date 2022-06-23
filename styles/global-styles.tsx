@@ -18,5 +18,11 @@ export const globalStyles = globalCss({
     // Modifying the color of input fields for dark mode
     ".dark-theme .nextui-c-eXOOPO": {
         backgroundColor: theme.colors.accents1.computedValue + " !important"
+    },
+
+    ".wallet-adapter-button": {
+        height: "40px !important",
+        borderRadius: theme.radii.md.computedValue + " !important"
     }
+
 })
