@@ -26,7 +26,7 @@ export default async function handler(
 
     // use specific network, if provided by the request. otherwise use the default
     const mx = network ? getMetaplex(getSolanaConnection(network)) : metaplex;
-    
+
     await runMiddleware(["GET"], req, res)
     
     // handle the request -- fetching user's NFTs w/ optional collection filter
@@ -39,8 +39,8 @@ export default async function handler(
             }
             
             // obtain user's list of metaplex NFTs
-            var nfts: Nft[] = await mx.nfts().findAllByOwner(new PublicKey(user));
-            
+            let nfts: Nft[] = await mx.nfts().findAllByOwner(new PublicKey(user));
+
             // if a collection was provided, filter the list of NFTs for the collection
             if (collection) {
                 nfts = nfts.filter(nft => { return nft.collection?.key.equals(new PublicKey(collection)) });
