@@ -1,6 +1,6 @@
 import type {AppProps} from 'next/app'
 import {NextUIProvider} from "@nextui-org/react";
-import {ConnectionProvider, useConnection, WalletProvider} from "@solana/wallet-adapter-react";
+import {ConnectionProvider, useConnection, useWallet, WalletProvider} from "@solana/wallet-adapter-react";
 import {WalletAdapterNetwork} from "@solana/wallet-adapter-base";
 import {clusterApiUrl} from "@solana/web3.js";
 import {WalletModalProvider} from "@solana/wallet-adapter-react-ui";
@@ -10,7 +10,7 @@ import {globalStyles} from "../styles/global-styles";
 import {lightTheme} from "../styles/light-theme";
 import {darkTheme} from "../styles/dark-theme";
 import {ThemeProvider} from "next-themes";
-import {bundlrStorage, Metaplex} from '@metaplex-foundation/js';
+import {bundlrStorage, Metaplex, walletAdapterIdentity} from '@metaplex-foundation/js';
 import {NetworkContext} from '../contexts/network-context';
 import {MetaplexContext} from '../contexts/metaplex-context';
 
@@ -26,6 +26,8 @@ function MyApp({Component, pageProps}: AppProps) {
             : WalletAdapterNetwork.Devnet
     );
 
+    const walletAdapter = useWallet();
+
     const [metaplex, setMetaplex] = useState<Metaplex>(Metaplex.make(connection));
 
     useEffect(() => {
@@ -34,8 +36,8 @@ function MyApp({Component, pageProps}: AppProps) {
             ? "https://node2.bundlr.network"
             : "https://devnet.bundlr.network";
 
-        // TODO - use wallet adapter identity to access keypair
         const mx = Metaplex.make(connection)
+            .use(walletAdapterIdentity(walletAdapter))
             .use(bundlrStorage({
                 address: bundlrAddress,
                 providerUrl: clusterApiUrl(network),
@@ -44,7 +46,7 @@ function MyApp({Component, pageProps}: AppProps) {
 
         setMetaplex(mx)
 
-    }, [connection, network])
+    }, [connection, network, walletAdapter])
 
     const wallets = useMemo(
         () => [

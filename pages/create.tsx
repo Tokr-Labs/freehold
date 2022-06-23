@@ -3,21 +3,16 @@ import {NextPage} from "next";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
 import {Button, Card, Checkbox, Container, Grid, Image, Input, Spacer, Text, Textarea} from "@nextui-org/react";
-import { useWallet } from "@solana/wallet-adapter-react";
-import {
-    CreateNftInput,
-    Nft,
-    useMetaplexFileFromBrowser,
-    walletAdapterIdentity
-} from "@metaplex-foundation/js";
+import {useWallet} from "@solana/wallet-adapter-react";
+import {CreateNftInput, Nft, useMetaplexFileFromBrowser} from "@metaplex-foundation/js";
 import PageWrapper from "../components/page-wrapper";
-import { MetaplexContext } from "../contexts/network-context";
+import {MetaplexContext} from "../contexts/metaplex-context";
 
 const Create: NextPage = () => {
-    const walletAdapter = useWallet();
 
-    // attach the wallet/signer to the metaplex instance
-    const mx = useContext(MetaplexContext).metaplex.use(walletAdapterIdentity(walletAdapter));
+    const mx = useContext(MetaplexContext);
+
+    const walletAdapter = useWallet();
 
     const [name, setName] = useState<string>()
     const [symbol, setSymbol] = useState<string>()
