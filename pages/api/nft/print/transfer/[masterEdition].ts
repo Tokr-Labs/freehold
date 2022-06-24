@@ -24,6 +24,7 @@ export default async function handler(
     switch (method) {
         case 'POST':
             // @TODO: perform security checks as priveleged users will be spending admin SOL to mint the prints
+            // TODO: atomically mint the print NFT & transfer it to the new owner, to prevent excess prints
             const printNft: any = await signable_metaplex.nfts().printNewEdition(masterEditionKey);
             const tx = await transferAdminNftTransaction(printNft.nft.mint, new PublicKey(to));
             sendAndConfirmTransaction(connection, tx, [adminWallet]);
