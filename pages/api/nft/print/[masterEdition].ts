@@ -1,8 +1,9 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { Nft, PrintNewEditionOutput } from "@metaplex-foundation/js";
+import { Nft } from "@metaplex-foundation/js";
 import { PublicKey } from "@solana/web3.js";
-import { metaplex, signable_metaplex } from "../../constants";
+import { AuthorizationFailure, metaplex, signable_metaplex } from "../../constants";
+import { basicAuthMiddleware } from '../../../../utils/run-middleware';
 
 type Data = {
     masterEdition: string | string[],
@@ -15,7 +16,7 @@ type Data = {
 // creates a print NFT (copy) of the provided master NFT
 export default async function handler(
     req: NextApiRequest,
-    res: NextApiResponse<Data>
+    res: NextApiResponse<Data | AuthorizationFailure>
 ) {
     const { query: { masterEdition }, method } = req;
     const masterEditionKey = new PublicKey(masterEdition);
@@ -27,9 +28,14 @@ export default async function handler(
             res.status(200).json({ masterEdition, nft });
             break;
         case 'POST':
-            // @TODO: perform security checks as priveleged users will be spending admin SOL to mint the prints
-            const printNft: any = await signable_metaplex.nfts().printNewEdition(masterEditionKey);
-            res.status(200).json({ masterEdition, nft: printNft });
+            const authorized = basicAuthMiddleware(req);
+
+            if (authorized){
+                const printNft: any = await signable_metaplex.nfts().printNewEdition(masterEditionKey);
+                res.status(200).json({ masterEdition, nft: printNft });
+            } else {
+                res.status(401).json({ message: "Authorization Failed", error: "Invalid authorization" });
+            }
             break;
         default:
             res.setHeader('Allow', ['GET', 'POST']);

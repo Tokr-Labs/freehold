@@ -19,3 +19,8 @@ export type MissingArgs = {
     args: string[],
     error: string
 }
+
+export type AuthorizationFailure = {
+    message: string,
+    error: string
+}
