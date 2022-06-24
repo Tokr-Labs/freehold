@@ -1,7 +1,5 @@
 import React, {useContext, useState} from "react";
 import {NextPage} from "next";
-import Navbar from "../components/navbar";
-import Footer from "../components/footer";
 import {Button, Card, Checkbox, Container, Grid, Image, Input, Spacer, Text, Textarea} from "@nextui-org/react";
 import {useWallet} from "@solana/wallet-adapter-react";
 import {CreateNftInput, Nft, useMetaplexFileFromBrowser, walletAdapterIdentity} from "@metaplex-foundation/js";
@@ -54,8 +52,6 @@ const Create: NextPage = () => {
 
     return (
         <PageWrapper>
-
-            <Navbar/>
 
             <Container style={{marginTop: "auto"}}>
 
@@ -148,8 +144,6 @@ const Create: NextPage = () => {
                 </Grid.Container>
 
             </Container>
-
-            <Footer/>
 
         </PageWrapper>
     )
