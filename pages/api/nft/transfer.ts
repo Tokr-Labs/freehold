@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { Nft } from "@metaplex-foundation/js";
 import { PublicKey, sendAndConfirmTransaction, Transaction, TransactionInstruction } from "@solana/web3.js";
 import { connection, metaplex, adminWallet, Success } from "../constants";
-import { getTokenTransferInstructions } from '../../library/nft/transfer';
+import { getTokenTransferInstructions } from '../../../library/nft/transfer';
 import { getAssociatedTokenAddress } from '@solana/spl-token';
 
 
