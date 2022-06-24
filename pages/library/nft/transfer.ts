@@ -72,7 +72,7 @@ export const getTokenTransferInstructions = async ({
     txs.push(createTransferInstruction(
         source,
         destAta,
-        destination,
+        payer,
         amount
     ))
 

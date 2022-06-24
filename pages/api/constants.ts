@@ -19,3 +19,8 @@ export type MissingArgs = {
     args: string[],
     error: string
 }
+
+export type Success = {
+    success: boolean
+    message?: string
+}
