@@ -1,11 +1,12 @@
 
-import { PublicKey, TransactionInstruction, Connection } from '@solana/web3.js';
+import { PublicKey, TransactionInstruction, Connection, Transaction } from '@solana/web3.js';
 import {
     getAssociatedTokenAddress,
     createAssociatedTokenAccountInstruction,
     createTransferInstruction
 } from '@solana/spl-token';
 import { Account } from '@metaplex-foundation/mpl-core';
+import { adminWallet, connection } from '../../pages/api/constants';
 
 
 /** Parameters for {@link sendToken} **/
@@ -78,3 +79,23 @@ export const getTokenTransferInstructions = async ({
 
     return txs;
 };
+
+export const transferAdminNftTransaction = async (
+    mint: PublicKey, to: PublicKey
+    ): Promise<Transaction> => {
+    // associated token account for the NFT & admin wallet
+    const ata = await getAssociatedTokenAddress(mint, adminWallet.publicKey);
+
+    // creates destination ATA (if it doesn't exist)
+    // transfer NFT from admin ATA to destination ATA
+    const ixs: TransactionInstruction[] = await getTokenTransferInstructions({
+        connection,
+        payer: adminWallet.publicKey,
+        source: ata,
+        destination: new PublicKey(to),
+        mint: mint,
+        amount: 1
+    });
+
+    return new Transaction().add(...ixs);
+}
