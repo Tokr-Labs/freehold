@@ -13,8 +13,9 @@ type Data = {
 }
 
 // example POST:
-// api/nft/print/2eqiaDuGJNrBniLR2D9YADJfsC9FzyPnfo159L6LKR6G
-// creates a print NFT (copy) of the provided master NFT
+// api/nft/print/transfer/2eqiaDuGJNrBniLR2D9YADJfsC9FzyPnfo159L6LKR6G
+// { to: 6k7PDpk7QsRJQAspUvFiaDCoe5GQDe96vmWx1L3Gy39H }
+// creates a print NFT (copy) of the provided master NFT and transfers it to a new owner
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<Data>
