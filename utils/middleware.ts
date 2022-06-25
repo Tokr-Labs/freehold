@@ -2,7 +2,7 @@ import Cors from "cors"
 import {NextApiRequest, NextApiResponse} from "next";
 
 
-export const runMiddleware = (
+export const corsMiddleware = (
     methods: string[],
     req: NextApiRequest,
     res: NextApiResponse

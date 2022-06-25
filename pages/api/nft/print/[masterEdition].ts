@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { Nft } from "@metaplex-foundation/js";
 import { PublicKey } from "@solana/web3.js";
 import { AuthorizationFailure, metaplex, signable_metaplex } from "../../constants";
-import { basicAuthMiddleware } from '../../../../utils/run-middleware';
+import { basicAuthMiddleware } from '../../../../utils/middleware';
 
 type Data = {
     masterEdition: string | string[],
