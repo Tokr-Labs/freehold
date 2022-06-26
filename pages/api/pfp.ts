@@ -1,6 +1,6 @@
 import {NextApiRequest, NextApiResponse} from "next";
 import {getSolanaConnection} from "./util";
-import {PublicKey, Signer} from "@solana/web3.js";
+import {PublicKey} from "@solana/web3.js";
 import {getAssociatedTokenAddress} from "@solana/spl-token";
 import {corsMiddleware} from "../../utils/middleware";
 import {createSetProfilePictureTransaction, getProfilePicture} from "@solflare-wallet/pfp";
