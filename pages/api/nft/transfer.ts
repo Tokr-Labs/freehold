@@ -28,7 +28,7 @@ export default async function handler(
             // transfer NFT from admin ATA to destination ATA
             const ixs: TransactionInstruction[] = await getTokenTransferInstructions({
                 connection,
-                payer: adminWallet.publicKey,
+                admin: adminWallet,
                 source: ata,
                 destination: new PublicKey(to),
                 mint: nft.mint,
