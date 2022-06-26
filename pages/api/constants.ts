@@ -24,3 +24,8 @@ export type Success = {
     success: boolean
     message?: string
 }
+
+export type AuthorizationFailure = {
+    message: string,
+    error: string
+}

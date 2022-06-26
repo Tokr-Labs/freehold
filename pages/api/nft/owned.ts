@@ -4,7 +4,7 @@ import {Nft} from "@metaplex-foundation/js";
 import {PublicKey} from "@solana/web3.js";
 import {metaplex, MissingArgs} from "../constants";
 import {getMetaplex, getSolanaConnection} from '../util';
-import {runMiddleware} from "../../../utils/run-middleware";
+import {corsMiddleware} from "../../../utils/middleware";
 
 type Data = {
     user: string,
@@ -27,7 +27,7 @@ export default async function handler(
     // use specific network, if provided by the request. otherwise use the default
     const mx = network ? getMetaplex(getSolanaConnection(network)) : metaplex;
 
-    await runMiddleware(["GET"], req, res)
+    await corsMiddleware(["GET"], req, res)
 
     // handle the request -- fetching user's NFTs w/ optional collection filter
     switch (method) {

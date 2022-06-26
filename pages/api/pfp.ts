@@ -1,7 +1,7 @@
 import {NextApiRequest, NextApiResponse} from "next";
 import {getSolanaConnection} from "./util";
 import {PublicKey} from "@solana/web3.js";
-import {runMiddleware} from "../../utils/run-middleware";
+import {corsMiddleware} from "../../utils/middleware";
 import {getProfilePicture} from "@solflare-wallet/pfp";
 
 export default async function handler(
@@ -14,7 +14,7 @@ export default async function handler(
     const connection = getSolanaConnection(network);
 
     // CORS
-    await runMiddleware(["GET"], req, res)
+    await corsMiddleware(["GET"], req, res)
 
     switch (method) {
 
