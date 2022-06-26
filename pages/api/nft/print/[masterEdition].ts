@@ -2,7 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { Nft } from "@metaplex-foundation/js";
 import { PublicKey } from "@solana/web3.js";
-import { AuthorizationFailure, metaplex, signable_metaplex } from "../../constants";
+import { AuthorizationFailure, AUTHORIZATION_FAILED, metaplex, signable_metaplex } from "../../constants";
 import { basicAuthMiddleware } from '../../../../utils/middleware';
 
 type Data = {
@@ -34,7 +34,7 @@ export default async function handler(
                 const printNft: any = await signable_metaplex.nfts().printNewEdition(masterEditionKey);
                 res.status(200).json({ masterEdition, nft: printNft });
             } else {
-                res.status(401).json({ message: "Authorization Failed", error: "Invalid authorization" });
+                res.status(401).json(AUTHORIZATION_FAILED);
             }
             break;
         default:
