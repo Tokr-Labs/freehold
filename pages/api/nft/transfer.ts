@@ -5,7 +5,7 @@ import { PublicKey, sendAndConfirmTransaction, Transaction, TransactionInstructi
 import { connection, metaplex, adminWallet, Success, AuthorizationFailure, AUTHORIZATION_FAILED } from "../constants";
 import { getTokenTransferInstructions } from '../../../library/nft/transfer';
 import { getAssociatedTokenAddress } from '@solana/spl-token';
-import { basicAuthMiddleware } from '../../../utils/middleware';
+import {basicAuthMiddleware, corsMiddleware} from '../../../utils/middleware';
 
 
 // example POST:
@@ -16,6 +16,9 @@ export default async function handler(
     res: NextApiResponse<Success | AuthorizationFailure>
 ) {
     const { body: { token, to }, method } = req;
+
+    await corsMiddleware(["POST"], req, res)
+
     switch (method) {
         case 'POST':
             const authorized = basicAuthMiddleware(req);
@@ -39,7 +42,7 @@ export default async function handler(
 
                 // sign & send transaction
                 const tx = new Transaction().add(...ixs);
-                sendAndConfirmTransaction(connection, tx, [adminWallet]);
+                await sendAndConfirmTransaction(connection, tx, [adminWallet]);
                 res.status(200).json({
                     success: true,
                     message: `Successfully transferred ${nft.mint} to ${to}`

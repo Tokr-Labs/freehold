@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { Nft } from "@metaplex-foundation/js";
 import { PublicKey } from "@solana/web3.js";
 import { AuthorizationFailure, AUTHORIZATION_FAILED, metaplex, signable_metaplex } from "../../constants";
-import { basicAuthMiddleware } from '../../../../utils/middleware';
+import {basicAuthMiddleware, corsMiddleware} from '../../../../utils/middleware';
 
 type Data = {
     masterEdition: string | string[],
@@ -20,13 +20,18 @@ export default async function handler(
 ) {
     const { query: { masterEdition }, method } = req;
     const masterEditionKey = new PublicKey(masterEdition);
+
+    await corsMiddleware(["GET", "POST"], req, res)
+
     switch (method) {
+
         case 'GET':
             // @TODO: this route should actually return all print editions
             // we may need to crawl the chain, or use `findAllByCreator(adminWallet)`
             const nft: Nft = await metaplex.nfts().findByMint(masterEditionKey);
             res.status(200).json({ masterEdition, nft });
             break;
+
         case 'POST':
             const authorized = basicAuthMiddleware(req);
 
@@ -37,6 +42,7 @@ export default async function handler(
                 res.status(401).json(AUTHORIZATION_FAILED);
             }
             break;
+
         default:
             res.setHeader('Allow', ['GET', 'POST']);
             res.status(405).end(`Method ${method} Not Allowed`);
