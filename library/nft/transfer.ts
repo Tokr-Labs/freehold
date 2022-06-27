@@ -1,19 +1,17 @@
 
-import { PublicKey, TransactionInstruction, Connection, Transaction } from '@solana/web3.js';
+import { PublicKey, TransactionInstruction, Connection, Keypair, Transaction } from '@solana/web3.js';
 import {
     getAssociatedTokenAddress,
-    createAssociatedTokenAccountInstruction,
+    getOrCreateAssociatedTokenAccount,
     createTransferInstruction
 } from '@solana/spl-token';
-import { Account } from '@metaplex-foundation/mpl-core';
 import { adminWallet, connection } from '../../pages/api/constants';
-
 
 /** Parameters for {@link sendToken} **/
 export interface SendTokenParams {
     connection: Connection;
     /** Source wallet address **/
-    payer: PublicKey;
+    payer: Keypair;
     /** Source wallet's associated token account address **/
     source: PublicKey;
     /** Destination wallet address **/
@@ -21,13 +19,7 @@ export interface SendTokenParams {
     /** Mint address of the tokento transfer **/
     mint: PublicKey;
     /** Amount of tokens to transfer.
-     * One important nuance to remember is that
-     * each token mint has a different amount of decimals,
-     * which need to be accounted while specifying the amount.
-     * For instance, to send 1 token with a 0 decimal mint
-     * you would provide `1` as the amount, but for a token mint
-     * with 6 decimals you would provide `1000000` as the amount
-     * to transfer one whole token **/
+     * Be aware of variable decimals when sending non-NFT SPL tokens **/
     amount: number;
 }
 
@@ -56,24 +48,13 @@ export const getTokenTransferInstructions = async ({
     const txs = [];
 
     // @TODO: we may need to allow for off-curve (PDA) addresses?
-    const destAta = await getAssociatedTokenAddress(mint, destination);
-
-    try {
-        // check if the account exists
-        await Account.load(connection, destAta);
-    } catch {
-        txs.push(createAssociatedTokenAccountInstruction(
-            payer,
-            destAta,
-            destination,
-            mint,
-        ));
-    }
+    // Be aware of atomicity: function call will send & confirm a transaction if the ATA does not exist
+    const destAta = await getOrCreateAssociatedTokenAccount(connection, payer, mint, destination);
 
     txs.push(createTransferInstruction(
         source,
-        destAta,
-        payer,
+        destAta.address,
+        payer.publicKey,
         amount
     ))
 
@@ -90,7 +71,7 @@ export const transferAdminNftTransaction = async (
     // transfer NFT from admin ATA to destination ATA
     const ixs: TransactionInstruction[] = await getTokenTransferInstructions({
         connection,
-        payer: adminWallet.publicKey,
+        payer: adminWallet,
         source: ata,
         destination: new PublicKey(to),
         mint: mint,

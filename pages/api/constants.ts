@@ -25,6 +25,8 @@ export type Success = {
     message?: string
 }
 
+export const AUTHORIZATION_FAILED = { message: "Authorization Failed", error: "Invalid authorization" }
+
 export type AuthorizationFailure = {
     message: string,
     error: string
