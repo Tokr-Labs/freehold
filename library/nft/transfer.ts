@@ -1,16 +1,17 @@
 
-import { PublicKey, TransactionInstruction, Connection, Keypair } from '@solana/web3.js';
+import { PublicKey, TransactionInstruction, Connection, Keypair, Transaction } from '@solana/web3.js';
 import {
+    getAssociatedTokenAddress,
     getOrCreateAssociatedTokenAccount,
     createTransferInstruction
 } from '@solana/spl-token';
-
+import { adminWallet, connection } from '../../pages/api/constants';
 
 /** Parameters for {@link sendToken} **/
 export interface SendTokenParams {
     connection: Connection;
     /** Source wallet address **/
-    admin: Keypair;
+    payer: Keypair;
     /** Source wallet's associated token account address **/
     source: PublicKey;
     /** Destination wallet address **/
@@ -38,7 +39,7 @@ export interface SendTokenParams {
  */
 export const getTokenTransferInstructions = async ({
     connection,
-    admin,
+    payer,
     source,
     destination,
     mint,
@@ -48,14 +49,34 @@ export const getTokenTransferInstructions = async ({
 
     // @TODO: we may need to allow for off-curve (PDA) addresses?
     // Be aware of atomicity: function call will send & confirm a transaction if the ATA does not exist
-    const destAta = await getOrCreateAssociatedTokenAccount(connection, admin, mint, destination);
+    const destAta = await getOrCreateAssociatedTokenAccount(connection, payer, mint, destination);
 
     txs.push(createTransferInstruction(
         source,
         destAta.address,
-        admin.publicKey,
+        payer.publicKey,
         amount
     ))
 
     return txs;
 };
+
+export const transferAdminNftTransaction = async (
+    mint: PublicKey, to: PublicKey
+    ): Promise<Transaction> => {
+    // associated token account for the NFT & admin wallet
+    const ata = await getAssociatedTokenAddress(mint, adminWallet.publicKey);
+
+    // creates destination ATA (if it doesn't exist)
+    // transfer NFT from admin ATA to destination ATA
+    const ixs: TransactionInstruction[] = await getTokenTransferInstructions({
+        connection,
+        payer: adminWallet,
+        source: ata,
+        destination: new PublicKey(to),
+        mint: mint,
+        amount: 1
+    });
+
+    return new Transaction().add(...ixs);
+}
