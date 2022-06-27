@@ -4,8 +4,8 @@ import {WalletMultiButton} from "@solana/wallet-adapter-react-ui";
 import Link from "next/link";
 import {FiHome, FiMenu, FiPlus, FiSearch} from "react-icons/fi";
 import {useTheme as useNextTheme} from "next-themes";
-import {NavbarMobileMenuButton} from "./navbar/navbar-mobile-menu-button";
-import {NavbarRpcNetworkDropdown} from "./navbar/navbar-rpc-network-dropdown";
+import {NavbarMobileMenuButton} from "./navbar-mobile-menu-button";
+import {NavbarRpcNetworkDropdown} from "./navbar-rpc-network-dropdown";
 
 const Navbar = () => {
 
