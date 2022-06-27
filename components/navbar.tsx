@@ -6,6 +6,7 @@ import {NetworkContext} from "../contexts/network-context";
 import {WalletAdapterNetwork} from "@solana/wallet-adapter-base";
 import {FiHome, FiMenu, FiPlus, FiSearch, FiServer} from "react-icons/fi";
 import {useTheme as useNextTheme} from "next-themes";
+import {NavbarMobileMenuButton} from "./navbar/navbar-mobile-menu-button";
 
 const Navbar = () => {
 
@@ -51,29 +52,9 @@ const Navbar = () => {
 
                             <Modal.Body>
 
-                                <Link href={"/"}>
-                                    <Button>
-                                        <FiHome/>
-                                        <Spacer x={0.5}/>
-                                        <Text color={"white"}>Home</Text>
-                                    </Button>
-                                </Link>
-
-                                <Link href={"/create"}>
-                                    <Button>
-                                        <FiPlus/>
-                                        <Spacer x={0.5}/>
-                                        <Text color={"white"}>Create</Text>
-                                    </Button>
-                                </Link>
-
-                                <Link href={"/explore"}>
-                                    <Button>
-                                        <FiSearch/>
-                                        <Spacer x={0.5}/>
-                                        <Text color={"white"}>Explore</Text>
-                                    </Button>
-                                </Link>
+                                <NavbarMobileMenuButton href={"/"} icon={<FiHome/>} text={"Home"}/>
+                                <NavbarMobileMenuButton href={"/create"} icon={<FiPlus/>} text={"Create"}/>
+                                <NavbarMobileMenuButton href={"/explore"} icon={<FiSearch/>} text={"Explore"}/>
 
                                 <WalletMultiButton onClick={closeHandler}/>
 
