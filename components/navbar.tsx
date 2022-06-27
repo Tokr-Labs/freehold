@@ -1,19 +1,13 @@
-import React, {useContext, useState} from "react";
-import {Button, Container, Dropdown, Grid, Modal, Spacer, Switch, Text, theme, useTheme} from "@nextui-org/react";
+import React from "react";
+import {Button, Container, Grid, Modal, Spacer, Switch, Text, theme, useTheme} from "@nextui-org/react";
 import {WalletMultiButton} from "@solana/wallet-adapter-react-ui";
 import Link from "next/link";
-import {NetworkContext} from "../contexts/network-context";
-import {WalletAdapterNetwork} from "@solana/wallet-adapter-base";
-import {FiHome, FiMenu, FiPlus, FiSearch, FiServer} from "react-icons/fi";
+import {FiHome, FiMenu, FiPlus, FiSearch} from "react-icons/fi";
 import {useTheme as useNextTheme} from "next-themes";
 import {NavbarMobileMenuButton} from "./navbar/navbar-mobile-menu-button";
+import {NavbarRpcNetworkDropdown} from "./navbar/navbar-rpc-network-dropdown";
 
 const Navbar = () => {
-
-    const {setNetwork} = useContext(NetworkContext)
-
-    const [selected, setSelected] = useState("devnet");
-    const [selectedKeys, setSelectedKeys] = useState(new Set(["devnet"]));
 
     const [isModalVisible, setIsModalVisible] = React.useState(false);
     const openHandler = () => setIsModalVisible(true);
@@ -62,34 +56,7 @@ const Navbar = () => {
 
                             <Modal.Footer justify={"space-between"}>
 
-                                <Dropdown>
-                                    <Dropdown.Button flat css={{tt: "capitalize"}}>
-                                        <FiServer/>
-                                        <Spacer x={0.5}/>
-                                        {selected}
-                                    </Dropdown.Button>
-                                    <Dropdown.Menu
-                                        aria-label="network selection"
-                                        disallowEmptySelection
-                                        selectionMode="single"
-                                        selectedKeys={selectedKeys}
-                                        onSelectionChange={keys => {
-                                            // @ts-ignore
-                                            setSelectedKeys(keys)
-
-                                            // @ts-ignore
-                                            const [selection] = keys
-                                            setSelected(selection)
-
-                                            selection === "devnet"
-                                                ? setNetwork(WalletAdapterNetwork.Devnet)
-                                                : setNetwork(WalletAdapterNetwork.Mainnet)
-                                        }}
-                                    >
-                                        <Dropdown.Item key="devnet">Devnet</Dropdown.Item>
-                                        <Dropdown.Item key="mainnet-beta">Mainnet-beta</Dropdown.Item>
-                                    </Dropdown.Menu>
-                                </Dropdown>
+                                <NavbarRpcNetworkDropdown/>
 
                                 <Switch
                                     checked={isDark}
@@ -105,34 +72,7 @@ const Navbar = () => {
 
                     <Grid xs={0} md={8} justify={"flex-end"}>
 
-                        <Dropdown>
-                            <Dropdown.Button flat css={{tt: "capitalize"}}>
-                                <FiServer/>
-                                <Spacer x={0.5}/>
-                                {selected}
-                            </Dropdown.Button>
-                            <Dropdown.Menu
-                                aria-label="network selection"
-                                disallowEmptySelection
-                                selectionMode="single"
-                                selectedKeys={selectedKeys}
-                                onSelectionChange={keys => {
-                                    // @ts-ignore
-                                    setSelectedKeys(keys)
-
-                                    // @ts-ignore
-                                    const [selection] = keys
-                                    setSelected(selection)
-
-                                    selection === "devnet"
-                                        ? setNetwork(WalletAdapterNetwork.Devnet)
-                                        : setNetwork(WalletAdapterNetwork.Mainnet)
-                                }}
-                            >
-                                <Dropdown.Item key="devnet">Devnet</Dropdown.Item>
-                                <Dropdown.Item key="mainnet-beta">Mainnet-beta</Dropdown.Item>
-                            </Dropdown.Menu>
-                        </Dropdown>
+                        <NavbarRpcNetworkDropdown/>
 
                         <Spacer x={1}/>
 
