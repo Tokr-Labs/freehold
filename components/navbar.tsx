@@ -56,14 +56,15 @@ const Navbar = () => {
 
                             <Modal.Footer justify={"space-between"}>
 
-                                <NavbarRpcNetworkDropdown/>
-
                                 <Switch
                                     checked={isDark}
                                     onChange={e => {
                                         setTheme(e.target.checked ? "dark" : "light")
                                     }}
                                 />
+
+                                <NavbarRpcNetworkDropdown/>
+
                             </Modal.Footer>
 
                         </Modal>
