@@ -4,7 +4,7 @@ import { Nft, PrintNewEditionOutput } from "@metaplex-foundation/js";
 import { PublicKey, sendAndConfirmTransaction } from "@solana/web3.js";
 import { adminWallet, AuthorizationFailure, connection, metaplex, signable_metaplex } from "../../../constants";
 import { transferAdminNftTransaction } from '../../../../../library/nft/transfer';
-import { basicAuthMiddleware } from '../../../../../utils/middleware';
+import {basicAuthMiddleware, corsMiddleware} from '../../../../../utils/middleware';
 
 type Data = {
     success: boolean,
@@ -23,6 +23,9 @@ export default async function handler(
 ) {
     const { query: { masterEdition }, body: { to }, method } = req;
     const masterEditionKey = new PublicKey(masterEdition);
+
+    await corsMiddleware(["POST"], req, res)
+
     switch (method) {
         case 'POST':
             const authorized = basicAuthMiddleware(req);
@@ -30,7 +33,7 @@ export default async function handler(
                 // TODO: atomically mint the print NFT & transfer it to the new owner, to prevent excess prints
                 const printNft: any = await signable_metaplex.nfts().printNewEdition(masterEditionKey);
                 const tx = await transferAdminNftTransaction(printNft.nft.mint, new PublicKey(to));
-                sendAndConfirmTransaction(connection, tx, [adminWallet]);
+                await sendAndConfirmTransaction(connection, tx, [adminWallet]);
 
                 res.status(200).json({ success: true, message: `Minted ${printNft.nft.mint} to ${to}`, nft: printNft });
             } else {
