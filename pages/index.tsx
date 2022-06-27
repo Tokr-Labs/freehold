@@ -12,7 +12,7 @@ const Home: NextPage = () => {
 
                 <Grid.Container alignItems={"center"}>
 
-                    <Grid xs={6}>
+                    <Grid xs={12} md={6}>
 
                         <Grid.Container gap={2}>
 
@@ -31,7 +31,7 @@ const Home: NextPage = () => {
 
                             </Grid>
 
-                            <Grid xs={6}>
+                            <Grid xs={12} md={6}>
 
                                 <Link href={"/create"}>
 
@@ -53,7 +53,7 @@ const Home: NextPage = () => {
 
                             </Grid>
 
-                            <Grid xs={6}>
+                            <Grid xs={12} md={6}>
 
                                 <Link href={"/explore"}>
 
@@ -79,7 +79,7 @@ const Home: NextPage = () => {
 
                     </Grid>
 
-                    <Grid xs={6}>
+                    <Grid xs={12} md={6}>
                         <Image
                             src={"/solana-shape1-full.png"}
                             alt={"background image"}
