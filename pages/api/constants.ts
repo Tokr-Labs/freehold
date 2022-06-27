@@ -11,7 +11,7 @@ import { getMetaplex, getSolanaConnection } from "./util";
 export const connection = getSolanaConnection();
 export const metaplex = getMetaplex();
 
-const adminWallet = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_PRIVATE_KEY!));
+export const adminWallet = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_PRIVATE_KEY!));
 export const signable_metaplex = getMetaplex().use(keypairIdentity(adminWallet));
 
 // generic response types
@@ -19,6 +19,13 @@ export type MissingArgs = {
     args: string[],
     error: string
 }
+
+export type Success = {
+    success: boolean
+    message?: string
+}
+
+export const AUTHORIZATION_FAILED = { message: "Authorization Failed", error: "Invalid authorization" }
 
 export type AuthorizationFailure = {
     message: string,
