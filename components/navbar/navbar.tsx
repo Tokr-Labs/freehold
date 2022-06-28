@@ -25,7 +25,11 @@ const Navbar = () => {
 
                     <Grid xs={4}>
                         <Link href={"/"}>
-                            <Button auto>Logo Placeholder</Button>
+                            <Button auto light>
+                                <Text size={40} weight={"extrabold"}>
+                                    Freehold
+                                </Text>
+                            </Button>
                         </Link>
                     </Grid>
 
