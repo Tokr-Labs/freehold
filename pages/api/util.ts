@@ -5,7 +5,7 @@ import { Metaplex } from "@metaplex-foundation/js";
 export const getSolanaConnection = (network?: string | WalletAdapterNetwork | undefined): Connection => {
     // return connection for the requested network
     if (network !== undefined) {
-        const nw = network === 'mainnet' ? WalletAdapterNetwork.Mainnet : WalletAdapterNetwork.Devnet;
+        const nw = network === 'mainnet-beta' ? WalletAdapterNetwork.Mainnet : WalletAdapterNetwork.Devnet;
         return new Connection(clusterApiUrl(nw));
     } else {
         // return mainnet connection for production otherwise default to devnet
