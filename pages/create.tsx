@@ -57,7 +57,7 @@ const Create: NextPage = () => {
 
                 <Grid.Container gap={2}>
 
-                    <Grid xs={6}>
+                    <Grid xs={12} md={6}>
 
                         <Card>
 
@@ -95,7 +95,7 @@ const Create: NextPage = () => {
 
                     </Grid>
 
-                    <Grid xs={6}>
+                    <Grid xs={12} md={6}>
 
                         <Card>
 

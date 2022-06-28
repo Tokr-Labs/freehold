@@ -14,7 +14,7 @@ const Footer = () => {
 
                 <Grid.Container gap={2} style={{marginBottom: 0, paddingBottom: 0}}>
 
-                    <Grid xs={4}>
+                    <Grid xs={0} md={5}>
                         <Switch
                             checked={isDark}
                             onChange={e => {
@@ -23,7 +23,7 @@ const Footer = () => {
                         />
                     </Grid>
 
-                    <Grid xs={4} justify={"center"}>
+                    <Grid xs={12} md={2} justify={"center"}>
                         <Text>
                             Built with 💜 by&nbsp;
                             <a href={"https://tokrlabs.xyz"}
@@ -36,7 +36,8 @@ const Footer = () => {
                         </Text>
                     </Grid>
 
-                    <Grid xs={4} justify={"flex-end"} alignItems={"center"}>
+                    {/* TODO - figure out how to justify center on xs breakpoint */}
+                    <Grid xs={12} md={5} justify={"flex-end"} alignItems={"center"}>
                         <span>Powered by</span>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
