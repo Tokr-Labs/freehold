@@ -1,167 +1,100 @@
 import type {NextPage} from 'next'
-import {Button, Card, Checkbox, Container, Grid, Image, Input, Spacer, Text, Textarea} from "@nextui-org/react";
-import {
-    bundlrStorage,
-    CreateNftInput,
-    Metaplex,
-    Nft,
-    useMetaplexFileFromBrowser,
-    walletAdapterIdentity
-} from "@metaplex-foundation/js";
-import {useConnection, useWallet} from "@solana/wallet-adapter-react";
-import {clusterApiUrl} from "@solana/web3.js";
-import {WalletAdapterNetwork} from "@solana/wallet-adapter-base";
-import Navbar from "../components/navbar";
-import Footer from "../components/footer";
-import {useState} from "react";
+import {Card, Container, Grid, Image, Text} from "@nextui-org/react";
+import Link from "next/link";
+import PageWrapper from "../components/page-wrapper";
 
 const Home: NextPage = () => {
 
-    const {connection} = useConnection();
-    const walletAdapter = useWallet();
-
-    const mx = Metaplex.make(connection)
-        .use(walletAdapterIdentity(walletAdapter))
-        .use(bundlrStorage({
-            address: "https://devnet.bundlr.network",
-            providerUrl: clusterApiUrl(WalletAdapterNetwork.Devnet),
-            timeout: 60000,
-        }))
-
-    const [name, setName] = useState<string>()
-    const [symbol, setSymbol] = useState<string>()
-    const [description, setDescription] = useState<string>()
-    const [isMutable, setIsMutable] = useState<boolean>(true)
-    const [image, setImage] = useState<File>()
-    const [nft, setNft] = useState<Nft>()
-
-    const createNft = async () => {
-
-        const {uri} = await mx.nfts().uploadMetadata({
-            name,
-            symbol,
-            description,
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            image: await useMetaplexFileFromBrowser(image!),
-            seller_fee_basis_points: 0,
-        })
-
-        const {nft} = await mx.nfts().create({
-            uri: uri,
-            isMutable
-        } as CreateNftInput)
-
-        setNft(nft)
-
-    }
-
-    const handleClick = async () => {
-
-        if (!walletAdapter.connected) {
-            await walletAdapter.connect()
-        }
-
-        await createNft()
-
-    }
-
     return (
-        <>
-
-            <Navbar/>
+        <PageWrapper>
 
             <Container>
 
-                <Grid.Container gap={2}>
+                <Grid.Container alignItems={"center"}>
 
-                    <Grid xs={6}>
+                    <Grid xs={12} md={6}>
 
-                        <Card>
+                        <Grid.Container gap={2}>
 
-                            <Card.Header>
-                                <Text h2 weight={"bold"}>Set Metadata</Text>
-                            </Card.Header>
+                            <Grid xs={12}>
 
-                            <Card.Body>
+                                <Text
+                                    h1
+                                    size={60}
+                                    weight={"bold"}
+                                    css={{
+                                        textGradient: "0deg, $purple600 -20%, $pink600 100%"
+                                    }}
+                                >
+                                    NFT creation made easy&nbsp;
+                                </Text>
 
-                                <Input label={"Name"} onChange={e => {
-                                    setName(e.target.value)
-                                }}/>
+                            </Grid>
 
-                                <Spacer y={1}/>
+                            <Grid xs={12} md={6}>
 
-                                <Input label={"Symbol"} onChange={e => {
-                                    setSymbol(e.target.value)
-                                }}/>
+                                <Link href={"/create"}>
 
-                                <Spacer y={1}/>
+                                    <Card isHoverable={true} isPressable={true}>
 
-                                <Textarea label={"Description"} onChange={e => {
-                                    setDescription(e.target.value)
-                                }}/>
+                                        <Card.Header>
+                                            <Text h3 weight={"bold"}>Create</Text>
+                                        </Card.Header>
 
-                                <Spacer y={1}/>
+                                        <Card.Body>
+                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                                            sed do eiusmod tempor incididunt ut labore et dolore magna
+                                            aliqua.
+                                        </Card.Body>
 
-                                <Checkbox defaultSelected={true} onChange={setIsMutable}>
-                                    Updatable
-                                </Checkbox>
+                                    </Card>
 
-                            </Card.Body>
+                                </Link>
 
-                        </Card>
+                            </Grid>
 
-                    </Grid>
+                            <Grid xs={12} md={6}>
 
-                    <Grid xs={6}>
+                                <Link href={"/explore"}>
 
-                        <Card>
+                                    <Card isHoverable={true} isPressable={true}>
 
-                            <Card.Header>
-                                <Text h2 weight={"bold"}>Upload Image</Text>
-                            </Card.Header>
+                                        <Card.Header>
+                                            <Text h3 weight={"bold"}>Explore</Text>
+                                        </Card.Header>
 
-                            <Card.Body>
+                                        <Card.Body>
+                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                                            sed do eiusmod tempor incididunt ut labore et dolore magna
+                                            aliqua.
+                                        </Card.Body>
 
-                                <input type={"file"} onChange={e => {
-                                    if (!e.target.files) return;
-                                    setImage(e.target.files[0])
-                                }}/>
+                                    </Card>
 
-                                {image && (
-                                    <Image
-                                        src={URL.createObjectURL(image)}
-                                        alt={"Uploaded image"}
-                                        height={200}
-                                        width={200}
-                                        showSkeleton={true}
-                                    />
-                                )}
+                                </Link>
 
-                            </Card.Body>
+                            </Grid>
 
-                        </Card>
+                        </Grid.Container>
 
                     </Grid>
 
-                    <Grid xs={12} justify={"flex-end"}>
-
-                        <Button
-                            disabled={!(name && symbol && description && image && walletAdapter.connected)}
-                            onClick={handleClick}
-                        >
-                            Create NFT
-                        </Button>
-
+                    <Grid xs={12} md={6}>
+                        <Image
+                            src={"/solana-shape1-full.png"}
+                            alt={"background image"}
+                            objectFit={"contain"}
+                            showSkeleton={true}
+                        />
                     </Grid>
 
                 </Grid.Container>
 
             </Container>
 
-            <Footer/>
-
-        </>
+        </PageWrapper>
     )
+
 }
 
 export default Home

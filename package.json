@@ -11,16 +11,23 @@
   "dependencies": {
     "@metaplex-foundation/js": "^0.11.5",
     "@nextui-org/react": "^1.0.0-beta.9",
+    "@solana/spl-token": "^0.2.0",
     "@solana/wallet-adapter-base": "^0.9.5",
     "@solana/wallet-adapter-react": "^0.15.5",
     "@solana/wallet-adapter-react-ui": "^0.9.7",
     "@solana/wallet-adapter-wallets": "^0.16.1",
     "@solana/web3.js": "^1.44.0",
+    "@solflare-wallet/pfp": "^0.0.6",
+    "bs58": "^5.0.0",
+    "cors": "^2.8.5",
     "next": "12.1.6",
+    "next-themes": "^0.2.0",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "react-icons": "^4.4.0"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.12",
     "@types/node": "18.0.0",
     "@types/react": "18.0.14",
     "@types/react-dom": "18.0.5",
