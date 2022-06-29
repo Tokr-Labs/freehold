@@ -14,7 +14,7 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<Success | AuthorizationFailure>
 ) {
-    const { body: { token, to }, method } = req;
+    const { query: { token, to }, method } = req;
 
     await corsMiddleware(["POST"], req, res)
 
