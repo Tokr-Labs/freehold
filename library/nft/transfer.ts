@@ -73,7 +73,7 @@ export const transferAdminNftTransaction = async (
         connection,
         payer: adminWallet,
         source: ata,
-        destination: new PublicKey(to),
+        destination: to,
         mint: mint,
         amount: 1
     });
