@@ -5,14 +5,14 @@ import {PublicKey, sendAndConfirmTransaction} from "@solana/web3.js";
 import {adminWallet, AUTHORIZATION_FAILED, connection, metaplex, signable_metaplex} from "../../_constants";
 import {basicAuthMiddleware, corsMiddleware} from '../../../../utils/middleware';
 import {transferAdminNftTransaction} from "../../../../library/nft/transfer";
-import {GetPrintNft, PostPrintNft} from "../../_requests";
+import {GetPrintNftRequest, PostPrintNftRequest} from "../../_requests";
 import {AuthorizationFailureResponse, PrintNftResponse} from "../../_responses";
 
 // example POST:
 // api/nft/print/2eqiaDuGJNrBniLR2D9YADJfsC9FzyPnfo159L6LKR6G
 // creates a print NFT (copy) of the provided master NFT
 export default async function handler(
-    req: GetPrintNft | PostPrintNft,
+    req: GetPrintNftRequest | PostPrintNftRequest,
     res: NextApiResponse<PrintNftResponse | AuthorizationFailureResponse>
 ) {
     // query params -> variables

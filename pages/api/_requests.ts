@@ -16,14 +16,14 @@ export interface GetPfpRequest extends NextApiRequest {
     }
 }
 
-export interface GetPrintNft extends NextApiRequest {
+export interface GetPrintNftRequest extends NextApiRequest {
     query: {
         masterEdition: string,
         to?: string
     }
 }
 
-export interface PostPrintNft extends NextApiRequest {
+export interface PostPrintNftRequest extends NextApiRequest {
     query: {
         masterEdition: string,
         to?: string
