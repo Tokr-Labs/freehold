@@ -3,20 +3,22 @@ import {getSolanaConnection} from "./_util";
 import {PublicKey} from "@solana/web3.js";
 import {corsMiddleware} from "../../utils/middleware";
 import {getProfilePicture} from "@solflare-wallet/pfp";
+import {GetPfpRequest} from "./_requests";
 
 export default async function handler(
-    req: NextApiRequest,
+    req: GetPfpRequest,
     res: NextApiResponse
 ){
-    const { query: {user}, method } = req
-    const network = req.query.network as string;
+    // query params -> variables
+    const user = req.query.user
+    const network= req.query.network
 
     const connection = getSolanaConnection(network);
 
     // CORS
     await corsMiddleware(["GET"], req, res)
 
-    switch (method) {
+    switch (req.method) {
 
         case "GET":
 
@@ -35,7 +37,7 @@ export default async function handler(
 
         default:
             res.setHeader("Allow", ["GET"]);
-            res.status(405).end(`Method ${method} Not Allowed`);
+            res.status(405).end(`Method ${req.method} Not Allowed`);
 
     }
 

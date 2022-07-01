@@ -12,6 +12,7 @@ import {
 } from "../../_constants";
 import {basicAuthMiddleware, corsMiddleware} from '../../../../utils/middleware';
 import {transferAdminNftTransaction} from "../../../../library/nft/transfer";
+import {GetPrintNft, PostPrintNft} from "../../_requests";
 
 type Data = {
     masterEdition: string | string[],
@@ -25,20 +26,21 @@ type Data = {
 // api/nft/print/2eqiaDuGJNrBniLR2D9YADJfsC9FzyPnfo159L6LKR6G
 // creates a print NFT (copy) of the provided master NFT
 export default async function handler(
-    req: NextApiRequest,
+    req: GetPrintNft | PostPrintNft,
     res: NextApiResponse<Data | AuthorizationFailure>
 ) {
-    const {query: {masterEdition, to}, method} = req;
-    const masterEditionKey = new PublicKey(masterEdition);
+    // query params -> variables
+    const masterEdition = req.query.masterEdition
+    const to = req.query.to
 
     await corsMiddleware(["GET", "POST"], req, res)
 
-    switch (method) {
+    switch (req.method) {
 
         case 'GET':
             // @TODO: this route should actually return all print editions
             // we may need to crawl the chain, or use `findAllByCreator(adminWallet)`
-            const nft: Nft = await metaplex.nfts().findByMint(masterEditionKey);
+            const nft: Nft = await metaplex.nfts().findByMint(new PublicKey(masterEdition));
             res.status(200).json({masterEdition, nft});
             break;
 
@@ -49,7 +51,7 @@ export default async function handler(
                 break;
             }
 
-            const printNft: any = await signable_metaplex.nfts().printNewEdition(masterEditionKey);
+            const printNft: any = await signable_metaplex.nfts().printNewEdition(new PublicKey(masterEdition));
 
             // TODO - better error handling
             if (to) {
@@ -69,7 +71,7 @@ export default async function handler(
 
         default:
             res.setHeader('Allow', ['GET', 'POST']);
-            res.status(405).end(`Method ${method} Not Allowed`);
+            res.status(405).end(`Method ${req.method} Not Allowed`);
     }
 
 }
