@@ -3,11 +3,12 @@ import type {NextApiResponse} from 'next';
 import {Nft} from "@metaplex-foundation/js";
 import {PublicKey} from "@solana/web3.js";
 import {metaplex} from "../_constants";
-import {getMetaplex, getSolanaConnection} from '../_util';
 import {corsMiddleware} from "../../../utils/middleware";
 import {GetOwnedNftsRequest} from "../_requests";
 import {MissingArgsResponse, OwnedNftsResponse} from "../_responses";
 import {StatusCodes} from "http-status-codes";
+import {getConnection} from "../../../utils/get-connection";
+import {getMetaplex} from "../../../utils/get-metaplex";
 
 // example GET:
 // api/nft/owned?user=3y1FhWu7XwyRxjfwqCD2JtuC9adf1dG4CSjijWb8iAMw
@@ -24,7 +25,7 @@ export default async function handler(
 
     // use specific network, if provided by the request. otherwise use the default
     const mx = network
-        ? getMetaplex(getSolanaConnection(network))
+        ? getMetaplex(getConnection(network))
         : metaplex;
 
     await corsMiddleware(["GET"], req, res)

@@ -1,11 +1,11 @@
 import {NextApiResponse} from "next";
-import {getSolanaConnection} from "./_util";
 import {PublicKey} from "@solana/web3.js";
 import {corsMiddleware} from "../../utils/middleware";
 import {getProfilePicture, ProfilePicture} from "@solflare-wallet/pfp";
 import {GetPfpRequest} from "./_requests";
 import {MissingArgsResponse} from "./_responses";
 import {StatusCodes} from "http-status-codes";
+import {getConnection} from "../../utils/get-connection";
 
 export default async function handler(
     req: GetPfpRequest,
@@ -15,7 +15,7 @@ export default async function handler(
     const user = req.query.user
     const network= req.query.network
 
-    const connection = getSolanaConnection(network);
+    const connection = getConnection(network);
 
     // CORS
     await corsMiddleware(["GET"], req, res)
