@@ -7,6 +7,7 @@ import {transferAdminNftTransaction} from '../../../library/nft/transfer';
 import {basicAuthMiddleware, corsMiddleware} from '../../../utils/middleware';
 import {PostTransferRequest} from "../_requests";
 import {AuthorizationFailureResponse, SuccessResponse} from "../_responses";
+import {StatusCodes} from "http-status-codes";
 
 
 // example POST:
@@ -27,7 +28,7 @@ export default async function handler(
         case 'POST':
             const authorized = basicAuthMiddleware(req);
             if (!authorized) {
-                res.status(401).json(AUTHORIZATION_FAILED);
+                res.status(StatusCodes.UNAUTHORIZED).json(AUTHORIZATION_FAILED);
                 break;
             }
 
@@ -51,12 +52,12 @@ export default async function handler(
                 success: true,
                 message: `Successfully transferred ${nft.mint} to ${to}`
             }
-            res.status(200).json(responseBody);
+            res.status(StatusCodes.OK).json(responseBody);
             break;
 
         default:
             res.setHeader('Allow', ['POST']);
-            res.status(405).end(`Method ${req.method} Not Allowed`);
+            res.status(StatusCodes.METHOD_NOT_ALLOWED).end(`Method ${req.method} Not Allowed`);
 
     }
 

@@ -5,6 +5,7 @@ import {corsMiddleware} from "../../utils/middleware";
 import {getProfilePicture, ProfilePicture} from "@solflare-wallet/pfp";
 import {GetPfpRequest} from "./_requests";
 import {MissingArgsResponse} from "./_responses";
+import {StatusCodes} from "http-status-codes";
 
 export default async function handler(
     req: GetPfpRequest,
@@ -28,7 +29,7 @@ export default async function handler(
                     args: ["user"],
                     error: "Must specify the user's publickey"
                 }
-                res.status(400).json(responseBody);
+                res.status(StatusCodes.BAD_REQUEST).json(responseBody);
                 break;
             }
 
@@ -37,12 +38,12 @@ export default async function handler(
                 new PublicKey(user)
             )
 
-            res.status(200).json(pfp)
+            res.status(StatusCodes.OK).json(pfp)
             break;
 
         default:
             res.setHeader("Allow", ["GET"]);
-            res.status(405).end(`Method ${req.method} Not Allowed`);
+            res.status(StatusCodes.METHOD_NOT_ALLOWED).end(`Method ${req.method} Not Allowed`);
 
     }
 

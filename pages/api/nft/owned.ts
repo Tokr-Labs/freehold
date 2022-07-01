@@ -7,6 +7,7 @@ import {getMetaplex, getSolanaConnection} from '../_util';
 import {corsMiddleware} from "../../../utils/middleware";
 import {GetOwnedNftsRequest} from "../_requests";
 import {MissingArgsResponse, OwnedNftsResponse} from "../_responses";
+import {StatusCodes} from "http-status-codes";
 
 // example GET:
 // api/nft/owned?user=3y1FhWu7XwyRxjfwqCD2JtuC9adf1dG4CSjijWb8iAMw
@@ -38,7 +39,7 @@ export default async function handler(
                     args: ["user"],
                     error: "Must specify the user's publickey"
                 }
-                res.status(400).json(responseBody);
+                res.status(StatusCodes.BAD_REQUEST).json(responseBody);
                 break;
             }
 
@@ -63,12 +64,12 @@ export default async function handler(
                 user,
                 nfts
             }
-            res.status(200).json(responseBody);
+            res.status(StatusCodes.OK).json(responseBody);
             break;
 
         default:
             res.setHeader('Allow', ['GET']);
-            res.status(405).end(`Method ${req.method} Not Allowed`);
+            res.status(StatusCodes.METHOD_NOT_ALLOWED).end(`Method ${req.method} Not Allowed`);
 
     }
 }

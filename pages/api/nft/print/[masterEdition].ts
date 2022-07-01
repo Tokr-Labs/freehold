@@ -7,6 +7,7 @@ import {basicAuthMiddleware, corsMiddleware} from '../../../../utils/middleware'
 import {transferAdminNftTransaction} from "../../../../library/nft/transfer";
 import {GetPrintNftRequest, PostPrintNftRequest} from "../../_requests";
 import {AuthorizationFailureResponse, PrintNftResponse} from "../../_responses";
+import {StatusCodes} from "http-status-codes";
 
 // example POST:
 // api/nft/print/2eqiaDuGJNrBniLR2D9YADJfsC9FzyPnfo159L6LKR6G
@@ -33,13 +34,13 @@ export default async function handler(
                 masterEdition,
                 nft
             }
-            res.status(200).json(responseBody);
+            res.status(StatusCodes.OK).json(responseBody);
             break;
 
         case 'POST':
             const authorized = basicAuthMiddleware(req);
             if (!authorized) {
-                res.status(401).json(AUTHORIZATION_FAILED);
+                res.status(StatusCodes.UNAUTHORIZED).json(AUTHORIZATION_FAILED);
                 break;
             }
 
@@ -66,16 +67,16 @@ export default async function handler(
                     message: `Minted ${printNft.nft.mint} to ${to}`
                 }
 
-                res.status(200).json(responseBody);
+                res.status(StatusCodes.OK).json(responseBody);
                 break;
             }
 
-            res.status(200).json({masterEdition, nft: printNft});
+            res.status(StatusCodes.OK).json({masterEdition, nft: printNft});
             break;
 
         default:
             res.setHeader('Allow', ['GET', 'POST']);
-            res.status(405).end(`Method ${req.method} Not Allowed`);
+            res.status(StatusCodes.METHOD_NOT_ALLOWED).end(`Method ${req.method} Not Allowed`);
     }
 
 }
