@@ -1,9 +1,10 @@
 // A place for defining constants or reusable objects
 // an API should NOT be defined, otherwise it will be exposed publicly
-import { keypairIdentity } from "@metaplex-foundation/js";
-import { Keypair } from "@solana/web3.js";
+import {keypairIdentity} from "@metaplex-foundation/js";
+import {Keypair} from "@solana/web3.js";
 import * as bs58 from "bs58";
-import { getMetaplex, getSolanaConnection } from "./_util";
+import {getMetaplex, getSolanaConnection} from "./_util";
+import {AuthorizationFailureResponse} from "./_responses";
 
 // init'd objects to be used in API (and not Pages, which should use contexts)
 // assumes that APIs using the objects will use default networks (production -> mainnet, otherwise devnet)
@@ -14,20 +15,8 @@ export const metaplex = getMetaplex();
 export const adminWallet = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_PRIVATE_KEY!));
 export const signable_metaplex = getMetaplex().use(keypairIdentity(adminWallet));
 
-// generic response types
-export type MissingArgs = {
-    args: string[],
-    error: string
+export const AUTHORIZATION_FAILED: AuthorizationFailureResponse = {
+    message: "Authorization Failed",
+    error: "Invalid authorization",
 }
 
-export type Success = {
-    success: boolean
-    message?: string
-}
-
-export const AUTHORIZATION_FAILED = { message: "Authorization Failed", error: "Invalid authorization" }
-
-export type AuthorizationFailure = {
-    message: string,
-    error: string
-}

@@ -1,25 +1,19 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type {NextApiRequest, NextApiResponse} from 'next';
+import type {NextApiResponse} from 'next';
 import {Nft} from "@metaplex-foundation/js";
 import {PublicKey} from "@solana/web3.js";
-import {metaplex, MissingArgs} from "../_constants";
+import {metaplex} from "../_constants";
 import {getMetaplex, getSolanaConnection} from '../_util';
 import {corsMiddleware} from "../../../utils/middleware";
-import {STATUS_CODES} from "http";
 import {GetOwnedNftsRequest} from "../_requests";
-
-type Data = {
-    user: string,
-    nfts: Nft[],
-    error?: string
-}
+import {MissingArgsResponse, OwnedNftsResponse} from "../_responses";
 
 // example GET:
 // api/nft/owned?user=3y1FhWu7XwyRxjfwqCD2JtuC9adf1dG4CSjijWb8iAMw
 // optional `collection` query param for filtering by collection
 export default async function handler(
     req: GetOwnedNftsRequest,
-    res: NextApiResponse<Data | MissingArgs>
+    res: NextApiResponse<OwnedNftsResponse | MissingArgsResponse>
 ) {
     // query params -> variables
     const user = req.query.user
@@ -40,8 +34,12 @@ export default async function handler(
         case 'GET':
             // validate that a user was provided
             if (!user) {
-                res.status(400).json({args: ["user"], error: "Must specify publickey (owner of NFTs to look-up)"});
-                return;
+                const responseBody: MissingArgsResponse = {
+                    args: ["user"],
+                    error: "Must specify the user's publickey"
+                }
+                res.status(400).json(responseBody);
+                break;
             }
 
             // obtain user's list of metaplex NFTs
@@ -49,7 +47,9 @@ export default async function handler(
 
             // if a collection was provided, filter the list of NFTs for the collection
             if (collection) {
-                nfts = nfts.filter(nft => nft.collection?.key.equals(new PublicKey(collection)));
+                nfts = nfts.filter(nft => {
+                    nft.collection?.key.equals(new PublicKey(collection))
+                });
             }
 
             if (metadata === 'true') {
@@ -59,7 +59,11 @@ export default async function handler(
                 }
             }
 
-            res.status(200).json({user, nfts});
+            const responseBody: OwnedNftsResponse = {
+                user,
+                nfts
+            }
+            res.status(200).json(responseBody);
             break;
 
         default:

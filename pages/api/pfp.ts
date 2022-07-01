@@ -1,13 +1,14 @@
-import {NextApiRequest, NextApiResponse} from "next";
+import {NextApiResponse} from "next";
 import {getSolanaConnection} from "./_util";
 import {PublicKey} from "@solana/web3.js";
 import {corsMiddleware} from "../../utils/middleware";
-import {getProfilePicture} from "@solflare-wallet/pfp";
+import {getProfilePicture, ProfilePicture} from "@solflare-wallet/pfp";
 import {GetPfpRequest} from "./_requests";
+import {MissingArgsResponse} from "./_responses";
 
 export default async function handler(
     req: GetPfpRequest,
-    res: NextApiResponse
+    res: NextApiResponse<ProfilePicture | MissingArgsResponse>
 ){
     // query params -> variables
     const user = req.query.user
@@ -23,14 +24,18 @@ export default async function handler(
         case "GET":
 
             if (!user) {
-                res.status(400).json({
+                const responseBody: MissingArgsResponse = {
                     args: ["user"],
-                    error: "Must specify user's publickey"
-                });
-                return;
+                    error: "Must specify the user's publickey"
+                }
+                res.status(400).json(responseBody);
+                break;
             }
 
-            const pfp = await getProfilePicture(connection, new PublicKey(user))
+            const pfp = await getProfilePicture(
+                connection,
+                new PublicKey(user)
+            )
 
             res.status(200).json(pfp)
             break;

@@ -1,33 +1,19 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type {NextApiRequest, NextApiResponse} from 'next';
+import type {NextApiResponse} from 'next';
 import {Nft} from "@metaplex-foundation/js";
 import {PublicKey, sendAndConfirmTransaction} from "@solana/web3.js";
-import {
-    adminWallet,
-    AUTHORIZATION_FAILED,
-    AuthorizationFailure,
-    connection,
-    metaplex,
-    signable_metaplex
-} from "../../_constants";
+import {adminWallet, AUTHORIZATION_FAILED, connection, metaplex, signable_metaplex} from "../../_constants";
 import {basicAuthMiddleware, corsMiddleware} from '../../../../utils/middleware';
 import {transferAdminNftTransaction} from "../../../../library/nft/transfer";
 import {GetPrintNft, PostPrintNft} from "../../_requests";
-
-type Data = {
-    masterEdition: string | string[],
-    nft: Nft,
-    success?: boolean,
-    message?: string,
-    error?: string
-}
+import {AuthorizationFailureResponse, PrintNftResponse} from "../../_responses";
 
 // example POST:
 // api/nft/print/2eqiaDuGJNrBniLR2D9YADJfsC9FzyPnfo159L6LKR6G
 // creates a print NFT (copy) of the provided master NFT
 export default async function handler(
     req: GetPrintNft | PostPrintNft,
-    res: NextApiResponse<Data | AuthorizationFailure>
+    res: NextApiResponse<PrintNftResponse | AuthorizationFailureResponse>
 ) {
     // query params -> variables
     const masterEdition = req.query.masterEdition
@@ -40,8 +26,14 @@ export default async function handler(
         case 'GET':
             // @TODO: this route should actually return all print editions
             // we may need to crawl the chain, or use `findAllByCreator(adminWallet)`
-            const nft: Nft = await metaplex.nfts().findByMint(new PublicKey(masterEdition));
-            res.status(200).json({masterEdition, nft});
+            const nft: Nft = await metaplex.nfts()
+                .findByMint(new PublicKey(masterEdition));
+
+            const responseBody: PrintNftResponse = {
+                masterEdition,
+                nft
+            }
+            res.status(200).json(responseBody);
             break;
 
         case 'POST':
@@ -51,18 +43,30 @@ export default async function handler(
                 break;
             }
 
-            const printNft: any = await signable_metaplex.nfts().printNewEdition(new PublicKey(masterEdition));
+            const printNft: any = await signable_metaplex.nfts()
+                .printNewEdition(new PublicKey(masterEdition));
 
             // TODO - better error handling
             if (to) {
-                const tx = await transferAdminNftTransaction(printNft.nft.mint, new PublicKey(to));
-                await sendAndConfirmTransaction(connection, tx, [adminWallet]);
-                res.status(200).json({
-                    masterEdition: masterEdition,
+                const tx = await transferAdminNftTransaction(
+                    printNft.nft.mint,
+                    new PublicKey(to)
+                );
+
+                await sendAndConfirmTransaction(
+                    connection,
+                    tx,
+                    [adminWallet]
+                );
+
+                const responseBody: PrintNftResponse = {
+                    masterEdition,
                     nft: printNft,
                     success: true,
                     message: `Minted ${printNft.nft.mint} to ${to}`
-                });
+                }
+
+                res.status(200).json(responseBody);
                 break;
             }
 
