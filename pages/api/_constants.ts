@@ -3,7 +3,7 @@
 import { keypairIdentity } from "@metaplex-foundation/js";
 import { Keypair } from "@solana/web3.js";
 import * as bs58 from "bs58";
-import { getMetaplex, getSolanaConnection } from "./util";
+import { getMetaplex, getSolanaConnection } from "./_util";
 
 // init'd objects to be used in API (and not Pages, which should use contexts)
 // assumes that APIs using the objects will use default networks (production -> mainnet, otherwise devnet)

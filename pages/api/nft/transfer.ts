@@ -2,7 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { Nft } from "@metaplex-foundation/js";
 import { PublicKey, sendAndConfirmTransaction, Transaction } from "@solana/web3.js";
-import { connection, metaplex, adminWallet, Success, AuthorizationFailure, AUTHORIZATION_FAILED } from "../constants";
+import { connection, metaplex, adminWallet, Success, AuthorizationFailure, AUTHORIZATION_FAILED } from "../_constants";
 import { transferAdminNftTransaction } from '../../../library/nft/transfer';
 import {basicAuthMiddleware, corsMiddleware} from '../../../utils/middleware';
 

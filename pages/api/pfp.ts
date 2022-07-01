@@ -1,5 +1,5 @@
 import {NextApiRequest, NextApiResponse} from "next";
-import {getSolanaConnection} from "./util";
+import {getSolanaConnection} from "./_util";
 import {PublicKey} from "@solana/web3.js";
 import {corsMiddleware} from "../../utils/middleware";
 import {getProfilePicture} from "@solflare-wallet/pfp";

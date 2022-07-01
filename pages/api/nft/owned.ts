@@ -2,8 +2,8 @@
 import type {NextApiRequest, NextApiResponse} from 'next';
 import {Nft} from "@metaplex-foundation/js";
 import {PublicKey} from "@solana/web3.js";
-import {metaplex, MissingArgs} from "../constants";
-import {getMetaplex, getSolanaConnection} from '../util';
+import {metaplex, MissingArgs} from "../_constants";
+import {getMetaplex, getSolanaConnection} from '../_util';
 import {corsMiddleware} from "../../../utils/middleware";
 
 type Data = {

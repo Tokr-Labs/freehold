@@ -9,7 +9,7 @@ import {
     connection,
     metaplex,
     signable_metaplex
-} from "../../constants";
+} from "../../_constants";
 import {basicAuthMiddleware, corsMiddleware} from '../../../../utils/middleware';
 import {transferAdminNftTransaction} from "../../../../library/nft/transfer";
 
