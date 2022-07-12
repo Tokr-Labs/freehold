@@ -5,7 +5,7 @@ import {
     getOrCreateAssociatedTokenAccount,
     createTransferInstruction
 } from '@solana/spl-token';
-import { adminWallet, connection } from '../../pages/api/constants';
+import { adminWallet, connection } from '../../pages/api/_constants';
 
 /** Parameters for {@link sendToken} **/
 export interface SendTokenParams {
