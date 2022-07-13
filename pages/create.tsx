@@ -1,28 +1,23 @@
 import React, {useContext, useState} from "react";
 import {NextPage} from "next";
 import {Button, Card, Checkbox, Container, Grid, Image, Input, Spacer, Text, Textarea} from "@nextui-org/react";
-import {useConnection, useWallet} from "@solana/wallet-adapter-react";
+import {useWallet} from "@solana/wallet-adapter-react";
 import {
-    CreateNftInput, findMasterEditionV2Pda, findMetadataPda,
-    Nft, parseMetadataAccount, parseOriginalOrPrintEditionAccount,
-    TokenMetadataProgram,
+    CreateNftInput,
+    findMasterEditionV2Pda,
+    findMetadataPda,
+    Nft,
     useMetaplexFileFromBrowser,
     walletAdapterIdentity
 } from "@metaplex-foundation/js";
 import PageWrapper from "../components/page-wrapper";
 import {MetaplexContext} from "../contexts/metaplex-context";
 import {PublicKey, Transaction} from "@solana/web3.js";
-import {
-    createSetAndVerifyCollectionInstruction,
-    createVerifyCollectionInstruction
-} from "@metaplex-foundation/mpl-token-metadata";
-import {Buffer} from "buffer";
-import {metaplex} from "./api/_constants";
+import {createSetAndVerifyCollectionInstruction} from "@metaplex-foundation/mpl-token-metadata";
 
 const Create: NextPage = () => {
 
     const walletAdapter = useWallet();
-    const {connection} = useConnection();
 
     // TODO - why does the wallet adapter identity need to be set again here?
     const mx = useContext(MetaplexContext).use(walletAdapterIdentity(walletAdapter));
