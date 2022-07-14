@@ -118,6 +118,7 @@ const Create: NextPage = () => {
                                     <Input
                                         label={"Name"}
                                         fullWidth={true}
+                                        maxLength={32}
                                         onChange={e => {
                                             setName(e.target.value)
                                         }}
@@ -128,6 +129,7 @@ const Create: NextPage = () => {
                                     <Input
                                         label={"Symbol"}
                                         fullWidth={true}
+                                        maxLength={10}
                                         onChange={e => {
                                             setSymbol(e.target.value)
                                         }}
