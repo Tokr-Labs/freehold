@@ -25,7 +25,7 @@ const Create: NextPage = () => {
     const [name, setName] = useState<string>()
     const [symbol, setSymbol] = useState<string>()
     const [description, setDescription] = useState<string>()
-    const [maxSupply, setMaxSupply] = useState<number>()
+    const [maxSupply, setMaxSupply] = useState<number>(1)
     const [collection, setCollection] = useState<string>()
     const [isMutable, setIsMutable] = useState<boolean>(true)
     const [image, setImage] = useState<File>()
@@ -134,6 +134,7 @@ const Create: NextPage = () => {
                                     type={"number"}
                                     min={0}
                                     step={1}
+                                    value={maxSupply}
                                     status={Number.isInteger(maxSupply) ? "default" : "error"}
                                     helperText={Number.isInteger(maxSupply) ? "" : "Max supply must be an integer"}
                                     helperColor={"error"}
