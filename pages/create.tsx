@@ -1,6 +1,19 @@
 import React, {useContext, useState} from "react";
 import {NextPage} from "next";
-import {Button, Card, Checkbox, Container, Grid, Image, Input, Spacer, Text, Textarea} from "@nextui-org/react";
+import {
+    Button,
+    Card,
+    Checkbox,
+    Container, Divider,
+    Grid,
+    Image,
+    Input,
+    Loading,
+    Modal,
+    Spacer,
+    Text,
+    Textarea, theme
+} from "@nextui-org/react";
 import {useWallet} from "@solana/wallet-adapter-react";
 import {
     CreateNftInput,
@@ -14,6 +27,51 @@ import PageWrapper from "../components/page-wrapper";
 import {MetaplexContext} from "../contexts/metaplex-context";
 import {PublicKey, Transaction} from "@solana/web3.js";
 import {createSetAndVerifyCollectionInstruction} from "@metaplex-foundation/mpl-token-metadata";
+import {BsFillCheckCircleFill, BsXCircleFill} from "react-icons/bs";
+import Link from "next/link";
+
+enum ProgressStatus {
+    Pending,  // Not yet submitted
+    InProgress,  // Processing and awaiting response
+    Succeeded,  // Success response
+    Failed  // Error response
+}
+
+const ProgressItem = (props: { progress: ProgressStatus, text: string }) => {
+
+    return (
+        <div style={{
+            display: "flex",
+            alignItems: "center",
+            color: props.progress === ProgressStatus.Pending
+                ? "gray"
+                : "inherit",
+            fontWeight: props.progress === ProgressStatus.Succeeded || props.progress === ProgressStatus.Failed
+                ? "bold"
+                : "inherit"
+        }}>
+
+            {
+                props.progress === ProgressStatus.InProgress
+                    ? <Loading size={"xs"}/>
+
+                    : props.progress === ProgressStatus.Succeeded
+                        ? <BsFillCheckCircleFill fill={theme.colors.success.computedValue}/>
+
+                        : props.progress === ProgressStatus.Failed
+                            ? <BsXCircleFill fill={theme.colors.error.computedValue}/>
+
+                            : <Loading size={"xs"} style={{visibility: "hidden"}}/>
+            }
+
+            <Spacer x={0.5}/>
+
+            {props.text}
+
+        </div>
+    )
+
+}
 
 const Create: NextPage = () => {
 
@@ -32,8 +90,14 @@ const Create: NextPage = () => {
     const [image, setImage] = useState<File>()
     const [nft, setNft] = useState<Nft>()
 
+    const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
+    const [metadataUploadProgress, setMetadataUploadProgress] = useState<ProgressStatus>(ProgressStatus.Pending)
+    const [nftCreationProgress, setNftCreationProgress] = useState<ProgressStatus>(ProgressStatus.Pending)
+    const [collectionVerificationProgress, setCollectionVerificationProgress] = useState<ProgressStatus>(ProgressStatus.Pending)
+
     const createNft = async () => {
 
+        // Uploading metadata
         const {uri} = await mx.nfts().uploadMetadata({
             name,
             symbol,
@@ -41,18 +105,40 @@ const Create: NextPage = () => {
             // eslint-disable-next-line react-hooks/rules-of-hooks
             image: await useMetaplexFileFromBrowser(image!),
             seller_fee_basis_points: 0,
+        }).catch(error => {
+            console.error("Metadata upload failed")
+            setMetadataUploadProgress(ProgressStatus.Failed)
+            return error;
         })
 
-        console.log(`Uploaded metadata (URI: ${uri})`)
+        if (uri) {
+            console.log(`Uploaded metadata (URI: ${uri})`)
+            setMetadataUploadProgress(ProgressStatus.Succeeded)
+            setNftCreationProgress(ProgressStatus.InProgress)
+        }
 
+        // Creating NFT
         const {nft} = await mx.nfts().create({
-            uri,
-            isMutable,
-            maxSupply: unlimitedSupply ? undefined : maxSupply
-        } as CreateNftInput)
+                uri,
+                isMutable,
+                maxSupply: unlimitedSupply ? undefined : maxSupply
+            } as CreateNftInput
+        ).catch(error => {
+            console.error("NFT creation failed")
+            setNftCreationProgress(ProgressStatus.Failed)
+            return error;
+        })
 
-        console.log(`Created NFT: ${nft.mint}`)
+        if (nft) {
+            console.log(`Created NFT: ${nft.mint}`)
+            setNft(nft)
+            setNftCreationProgress(ProgressStatus.Succeeded)
+            if (collection) {
+                setCollectionVerificationProgress(ProgressStatus.InProgress)
+            }
+        }
 
+        // If a collection was specified, attempting to set and verify it on the NFT
         if (collection) {
 
             const collectionNft = await mx.nfts().findByMint(new PublicKey(collection))
@@ -76,13 +162,19 @@ const Create: NextPage = () => {
 
             console.log("About to send transaction to set and verify collection")
 
-            await mx.rpc().sendAndConfirmTransaction(tx, [mx.identity()])
-                .then(response => console.log("Signature:", response.signature))
-                .catch(console.error)
+            const txResponse = await mx.rpc().sendAndConfirmTransaction(tx, [mx.identity()])
+                .catch(error => {
+                    console.error("Collection setting and verification failed")
+                    setCollectionVerificationProgress(ProgressStatus.Failed)
+                    return error;
+                })
+
+            if (txResponse.signature) {
+                console.log("Collection set and verified. Signature:", txResponse.signature)
+                setCollectionVerificationProgress(ProgressStatus.Succeeded)
+            }
 
         }
-
-        setNft(nft)
 
     }
 
@@ -92,8 +184,19 @@ const Create: NextPage = () => {
             await walletAdapter.connect()
         }
 
+        setMetadataUploadProgress(ProgressStatus.InProgress)
+        openModal()
+
         await createNft()
 
+    }
+
+    const openModal = () => {
+        setIsModalVisible(true)
+    }
+
+    const closeModal = () => {
+        setIsModalVisible(false)
     }
 
     return (
@@ -232,6 +335,59 @@ const Create: NextPage = () => {
                     </Grid>
 
                     <Grid xs={12} justify={"flex-end"}>
+
+                        <Modal
+                            closeButton={true}
+                            open={isModalVisible}
+                            onClose={closeModal}
+                            width={"425px"}
+                        >
+
+                            <Modal.Header>
+                                <Text h3 weight={"bold"}>Creating NFT</Text>
+                            </Modal.Header>
+
+                            <Modal.Body>
+
+                                <ProgressItem
+                                    progress={metadataUploadProgress}
+                                    text={"Uploading metadata to Arweave"}
+                                />
+
+                                <ProgressItem
+                                    progress={nftCreationProgress}
+                                    text={"Creating NFT"}
+                                />
+
+                                {collection && <ProgressItem
+                                    progress={collectionVerificationProgress}
+                                    text={"Setting and verifying collection"}
+                                />}
+
+                                {nft && <div style={{textAlign: "center"}}>
+
+                                    <Divider/>
+
+                                    <Spacer y={0.5}/>
+
+                                    <Text>NFT Created! View on the explorer:</Text>
+
+                                    <Link href={`https://explorer.solana.com/address/${nft.mint}?cluster=${mx.cluster}`}>
+                                        <a target={"_blank"} style={{
+                                            color: theme.colors.primary.computedValue,
+                                            fontSize: theme.fontSizes.sm.computedValue
+                                        }}>
+                                            {nft.mint.toString()}
+                                        </a>
+                                    </Link>
+
+                                </div>}
+
+                            </Modal.Body>
+
+                            <Modal.Footer/>
+
+                        </Modal>
 
                         <Button
                             disabled={!(name && symbol && description && image && walletAdapter.connected)}
