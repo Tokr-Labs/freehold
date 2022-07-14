@@ -105,10 +105,10 @@ const Create: NextPage = () => {
             // eslint-disable-next-line react-hooks/rules-of-hooks
             image: await useMetaplexFileFromBrowser(image!),
             seller_fee_basis_points: 0,
-        }).catch(error => {
+        }).catch(() => {
             console.error("Metadata upload failed")
             setMetadataUploadProgress(ProgressStatus.Failed)
-            return error;
+            throw new Error("Metadata upload failed")
         })
 
         if (uri) {
@@ -123,10 +123,10 @@ const Create: NextPage = () => {
                 isMutable,
                 maxSupply: unlimitedSupply ? undefined : maxSupply
             } as CreateNftInput
-        ).catch(error => {
+        ).catch(() => {
             console.error("NFT creation failed")
             setNftCreationProgress(ProgressStatus.Failed)
-            return error;
+            throw new Error("NFT creation failed")
         })
 
         if (nft) {
@@ -163,10 +163,10 @@ const Create: NextPage = () => {
             console.log("About to send transaction to set and verify collection")
 
             const txResponse = await mx.rpc().sendAndConfirmTransaction(tx, [mx.identity()])
-                .catch(error => {
+                .catch(() => {
                     console.error("Collection setting and verification failed")
                     setCollectionVerificationProgress(ProgressStatus.Failed)
-                    return error;
+                    throw new Error("Collection setting and verification failed")
                 })
 
             if (txResponse.signature) {
