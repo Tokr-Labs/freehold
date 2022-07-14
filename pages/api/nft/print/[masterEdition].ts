@@ -2,12 +2,14 @@
 import type {NextApiResponse} from 'next';
 import {Nft} from "@metaplex-foundation/js";
 import {PublicKey, sendAndConfirmTransaction} from "@solana/web3.js";
-import {adminWallet, AUTHORIZATION_FAILED, connection, metaplex, signable_metaplex} from "../../_constants";
+import {adminWallet, AUTHORIZATION_FAILED, signable_metaplex} from "../../_constants";
 import {basicAuthMiddleware, corsMiddleware} from '../../../../utils/middleware';
 import {transferAdminNftTransaction} from "../../../../library/nft/transfer";
 import {GetPrintNftRequest, PostPrintNftRequest} from "../../_requests";
 import {AuthorizationFailureResponse, PrintNftResponse} from "../../_responses";
 import {StatusCodes} from "http-status-codes";
+import {getConnection} from "../../../../utils/get-connection";
+import {getMetaplex} from "../../../../utils/get-metaplex";
 
 // example POST:
 // api/nft/print/2eqiaDuGJNrBniLR2D9YADJfsC9FzyPnfo159L6LKR6G
@@ -20,6 +22,9 @@ export default async function handler(
     const masterEdition = req.query.masterEdition
     const to = req.query.to
 
+    const connection = getConnection()
+    const mx = getMetaplex()
+
     await corsMiddleware(["GET", "POST"], req, res)
 
     switch (req.method) {
@@ -27,7 +32,7 @@ export default async function handler(
         case 'GET':
             // @TODO: this route should actually return all print editions
             // we may need to crawl the chain, or use `findAllByCreator(adminWallet)`
-            const nft: Nft = await metaplex.nfts()
+            const nft: Nft = await mx.nfts()
                 .findByMint(new PublicKey(masterEdition));
 
             const responseBody: PrintNftResponse = {

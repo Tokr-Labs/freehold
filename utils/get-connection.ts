@@ -12,7 +12,7 @@ export const getConnection = (network?: string | WalletAdapterNetwork | undefine
         return new Connection(clusterApiUrl(nw))
     }
 
-    // return mainnet connection for production otherwise default to devnet
+    // by default, return mainnet for production and devnet otherwise
     return process.env.VERCEL_ENV === 'production'
         ? new Connection(clusterApiUrl(WalletAdapterNetwork.Mainnet))
         : new Connection(clusterApiUrl(WalletAdapterNetwork.Devnet))

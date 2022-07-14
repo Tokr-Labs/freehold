@@ -2,7 +2,6 @@
 import type {NextApiResponse} from 'next';
 import {Nft} from "@metaplex-foundation/js";
 import {PublicKey} from "@solana/web3.js";
-import {metaplex} from "../_constants";
 import {corsMiddleware} from "../../../utils/middleware";
 import {GetOwnedNftsRequest} from "../_requests";
 import {MissingArgsResponse, OwnedNftsResponse} from "../_responses";
@@ -24,9 +23,7 @@ export default async function handler(
     const network = req.query.network
 
     // use specific network, if provided by the request. otherwise use the default
-    const mx = network
-        ? getMetaplex(getConnection(network))
-        : metaplex;
+    const mx = getMetaplex(getConnection(network));
 
     await corsMiddleware(["GET"], req, res)
 
