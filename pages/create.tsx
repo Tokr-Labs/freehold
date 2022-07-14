@@ -25,6 +25,7 @@ const Create: NextPage = () => {
     const [name, setName] = useState<string>()
     const [symbol, setSymbol] = useState<string>()
     const [description, setDescription] = useState<string>()
+    const [maxSupply, setMaxSupply] = useState<number>()
     const [collection, setCollection] = useState<string>()
     const [isMutable, setIsMutable] = useState<boolean>(true)
     const [image, setImage] = useState<File>()
@@ -125,6 +126,21 @@ const Create: NextPage = () => {
                                 <Textarea label={"Description"} onChange={e => {
                                     setDescription(e.target.value)
                                 }}/>
+
+                                <Spacer y={1}/>
+
+                                <Input
+                                    label={"Max Supply"}
+                                    type={"number"}
+                                    min={0}
+                                    step={1}
+                                    status={Number.isInteger(maxSupply) ? "default" : "error"}
+                                    helperText={Number.isInteger(maxSupply) ? "" : "Max supply must be an integer"}
+                                    helperColor={"error"}
+                                    onChange={e => {
+                                        setMaxSupply(Number(e.target.value))
+                                    }}
+                                />
 
                                 <Spacer y={1}/>
 
