@@ -26,6 +26,7 @@ const Create: NextPage = () => {
     const [symbol, setSymbol] = useState<string>()
     const [description, setDescription] = useState<string>()
     const [maxSupply, setMaxSupply] = useState<number>(1)
+    const [unlimitedSupply, setUnlimitedSupply] = useState<boolean>(true)
     const [collection, setCollection] = useState<string>()
     const [isMutable, setIsMutable] = useState<boolean>(true)
     const [image, setImage] = useState<File>()
@@ -45,8 +46,9 @@ const Create: NextPage = () => {
         console.log(`Uploaded metadata (URI: ${uri})`)
 
         const {nft} = await mx.nfts().create({
-            uri: uri,
-            isMutable
+            uri,
+            isMutable,
+            maxSupply: unlimitedSupply ? undefined : maxSupply
         } as CreateNftInput)
 
         console.log(`Created NFT: ${nft.mint}`)
@@ -129,19 +131,34 @@ const Create: NextPage = () => {
 
                                 <Spacer y={1}/>
 
-                                <Input
-                                    label={"Max Supply"}
-                                    type={"number"}
-                                    min={0}
-                                    step={1}
-                                    value={maxSupply}
-                                    status={Number.isInteger(maxSupply) ? "default" : "error"}
-                                    helperText={Number.isInteger(maxSupply) ? "" : "Max supply must be an integer"}
-                                    helperColor={"error"}
-                                    onChange={e => {
-                                        setMaxSupply(Number(e.target.value))
-                                    }}
-                                />
+                                <div style={{display: "flex", alignItems: "center"}}>
+
+                                    <Input
+                                        label={"Max Supply"}
+                                        type={"number"}
+                                        min={0}
+                                        step={1}
+                                        value={maxSupply}
+                                        disabled={unlimitedSupply}
+                                        status={Number.isInteger(maxSupply) ? "default" : "error"}
+                                        helperText={Number.isInteger(maxSupply) ? "" : "Max supply must be an integer"}
+                                        helperColor={"error"}
+                                        onChange={e => {
+                                            setMaxSupply(Number(e.target.value))
+                                        }}
+                                    />
+
+                                    <Spacer x={1}/>
+
+                                    <Checkbox
+                                        defaultSelected={unlimitedSupply}
+                                        onChange={setUnlimitedSupply}
+                                        css={{marginTop: "25px"}}
+                                    >
+                                        <Text size={14}>Unlimited Supply</Text>
+                                    </Checkbox>
+
+                                </div>
 
                                 <Spacer y={1}/>
 
