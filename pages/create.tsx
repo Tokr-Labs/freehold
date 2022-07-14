@@ -1,10 +1,77 @@
 import React, {useContext, useState} from "react";
 import {NextPage} from "next";
-import {Button, Card, Checkbox, Container, Grid, Image, Input, Spacer, Text, Textarea} from "@nextui-org/react";
+import {
+    Button,
+    Card,
+    Checkbox,
+    Container, Divider,
+    Grid,
+    Image,
+    Input,
+    Loading,
+    Modal,
+    Spacer,
+    Text,
+    Textarea, theme
+} from "@nextui-org/react";
 import {useWallet} from "@solana/wallet-adapter-react";
-import {CreateNftInput, Nft, useMetaplexFileFromBrowser, walletAdapterIdentity} from "@metaplex-foundation/js";
+import {
+    CreateNftInput,
+    findMasterEditionV2Pda,
+    findMetadataPda,
+    Nft,
+    useMetaplexFileFromBrowser,
+    walletAdapterIdentity
+} from "@metaplex-foundation/js";
 import PageWrapper from "../components/page-wrapper";
 import {MetaplexContext} from "../contexts/metaplex-context";
+import {PublicKey, Transaction} from "@solana/web3.js";
+import {createSetAndVerifyCollectionInstruction} from "@metaplex-foundation/mpl-token-metadata";
+import {BsFillCheckCircleFill, BsXCircleFill} from "react-icons/bs";
+import Link from "next/link";
+
+enum ProgressStatus {
+    Pending,  // Not yet submitted
+    InProgress,  // Processing and awaiting response
+    Succeeded,  // Success response
+    Failed  // Error response
+}
+
+const ProgressItem = (props: { progress: ProgressStatus, text: string }) => {
+
+    return (
+        <div style={{
+            display: "flex",
+            alignItems: "center",
+            color: props.progress === ProgressStatus.Pending
+                ? "gray"
+                : "inherit",
+            fontWeight: props.progress === ProgressStatus.Succeeded || props.progress === ProgressStatus.Failed
+                ? "bold"
+                : "inherit"
+        }}>
+
+            {
+                props.progress === ProgressStatus.InProgress
+                    ? <Loading size={"xs"}/>
+
+                    : props.progress === ProgressStatus.Succeeded
+                        ? <BsFillCheckCircleFill fill={theme.colors.success.computedValue}/>
+
+                        : props.progress === ProgressStatus.Failed
+                            ? <BsXCircleFill fill={theme.colors.error.computedValue}/>
+
+                            : <Loading size={"xs"} style={{visibility: "hidden"}}/>
+            }
+
+            <Spacer x={0.5}/>
+
+            {props.text}
+
+        </div>
+    )
+
+}
 
 const Create: NextPage = () => {
 
@@ -16,12 +83,21 @@ const Create: NextPage = () => {
     const [name, setName] = useState<string>()
     const [symbol, setSymbol] = useState<string>()
     const [description, setDescription] = useState<string>()
+    const [maxSupply, setMaxSupply] = useState<number>(1)
+    const [unlimitedSupply, setUnlimitedSupply] = useState<boolean>(true)
+    const [collection, setCollection] = useState<string>()
     const [isMutable, setIsMutable] = useState<boolean>(true)
     const [image, setImage] = useState<File>()
     const [nft, setNft] = useState<Nft>()
 
+    const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
+    const [metadataUploadProgress, setMetadataUploadProgress] = useState<ProgressStatus>(ProgressStatus.Pending)
+    const [nftCreationProgress, setNftCreationProgress] = useState<ProgressStatus>(ProgressStatus.Pending)
+    const [collectionVerificationProgress, setCollectionVerificationProgress] = useState<ProgressStatus>(ProgressStatus.Pending)
+
     const createNft = async () => {
 
+        // Uploading metadata
         const {uri} = await mx.nfts().uploadMetadata({
             name,
             symbol,
@@ -29,14 +105,76 @@ const Create: NextPage = () => {
             // eslint-disable-next-line react-hooks/rules-of-hooks
             image: await useMetaplexFileFromBrowser(image!),
             seller_fee_basis_points: 0,
+        }).catch(() => {
+            console.error("Metadata upload failed")
+            setMetadataUploadProgress(ProgressStatus.Failed)
+            throw new Error("Metadata upload failed")
         })
 
-        const {nft} = await mx.nfts().create({
-            uri: uri,
-            isMutable
-        } as CreateNftInput)
+        if (uri) {
+            console.log(`Uploaded metadata (URI: ${uri})`)
+            setMetadataUploadProgress(ProgressStatus.Succeeded)
+            setNftCreationProgress(ProgressStatus.InProgress)
+        }
 
-        setNft(nft)
+        // Creating NFT
+        const {nft} = await mx.nfts().create({
+                uri,
+                isMutable,
+                maxSupply: unlimitedSupply ? undefined : maxSupply
+            } as CreateNftInput
+        ).catch(() => {
+            console.error("NFT creation failed")
+            setNftCreationProgress(ProgressStatus.Failed)
+            throw new Error("NFT creation failed")
+        })
+
+        if (nft) {
+            console.log(`Created NFT: ${nft.mint}`)
+            setNft(nft)
+            setNftCreationProgress(ProgressStatus.Succeeded)
+            if (collection) {
+                setCollectionVerificationProgress(ProgressStatus.InProgress)
+            }
+        }
+
+        // If a collection was specified, attempting to set and verify it on the NFT
+        if (collection) {
+
+            const collectionNft = await mx.nfts().findByMint(new PublicKey(collection))
+
+            const nftMetadataAccount = await findMetadataPda(nft.mint)
+            const masterEditionAccount = await findMasterEditionV2Pda(collectionNft.mint)
+            const collectionMetadataAccount = await findMetadataPda(collectionNft.mint)
+
+            const tx = new Transaction()
+            tx.add(
+                createSetAndVerifyCollectionInstruction({
+                    metadata: nftMetadataAccount,
+                    collectionAuthority: collectionNft.updateAuthority,
+                    payer: mx.identity().publicKey,
+                    updateAuthority: collectionNft.updateAuthority,
+                    collectionMint: collectionNft.mint,
+                    collection: collectionMetadataAccount,
+                    collectionMasterEditionAccount: masterEditionAccount,
+                })
+            )
+
+            console.log("About to send transaction to set and verify collection")
+
+            const txResponse = await mx.rpc().sendAndConfirmTransaction(tx, [mx.identity()])
+                .catch(() => {
+                    console.error("Collection setting and verification failed")
+                    setCollectionVerificationProgress(ProgressStatus.Failed)
+                    throw new Error("Collection setting and verification failed")
+                })
+
+            if (txResponse.signature) {
+                console.log("Collection set and verified. Signature:", txResponse.signature)
+                setCollectionVerificationProgress(ProgressStatus.Succeeded)
+            }
+
+        }
 
     }
 
@@ -46,8 +184,19 @@ const Create: NextPage = () => {
             await walletAdapter.connect()
         }
 
+        setMetadataUploadProgress(ProgressStatus.InProgress)
+        openModal()
+
         await createNft()
 
+    }
+
+    const openModal = () => {
+        setIsModalVisible(true)
+    }
+
+    const closeModal = () => {
+        setIsModalVisible(false)
     }
 
     return (
@@ -67,21 +216,76 @@ const Create: NextPage = () => {
 
                             <Card.Body>
 
-                                <Input label={"Name"} onChange={e => {
-                                    setName(e.target.value)
-                                }}/>
+                                <div style={{display: "flex", alignItems: "center"}}>
 
-                                <Spacer y={1}/>
+                                    <Input
+                                        label={"Name"}
+                                        fullWidth={true}
+                                        maxLength={32}
+                                        onChange={e => {
+                                            setName(e.target.value)
+                                        }}
+                                    />
 
-                                <Input label={"Symbol"} onChange={e => {
-                                    setSymbol(e.target.value)
-                                }}/>
+                                    <Spacer x={1}/>
+
+                                    <Input
+                                        label={"Symbol"}
+                                        fullWidth={true}
+                                        maxLength={10}
+                                        onChange={e => {
+                                            setSymbol(e.target.value)
+                                        }}
+                                    />
+
+                                </div>
 
                                 <Spacer y={1}/>
 
                                 <Textarea label={"Description"} onChange={e => {
                                     setDescription(e.target.value)
                                 }}/>
+
+                                <Spacer y={1}/>
+
+                                <div style={{display: "flex", alignItems: "center"}}>
+
+                                    <Input
+                                        label={"Max Supply"}
+                                        type={"number"}
+                                        min={0}
+                                        step={1}
+                                        value={maxSupply}
+                                        disabled={unlimitedSupply}
+                                        status={Number.isInteger(maxSupply) ? "default" : "error"}
+                                        helperText={Number.isInteger(maxSupply) ? "" : "Max supply must be an integer"}
+                                        helperColor={"error"}
+                                        onChange={e => {
+                                            setMaxSupply(Number(e.target.value))
+                                        }}
+                                    />
+
+                                    <Spacer x={1}/>
+
+                                    <Checkbox
+                                        defaultSelected={unlimitedSupply}
+                                        onChange={setUnlimitedSupply}
+                                        css={{marginTop: "25px"}}
+                                    >
+                                        <Text size={14}>Unlimited Supply</Text>
+                                    </Checkbox>
+
+                                </div>
+
+                                <Spacer y={1}/>
+
+                                <Input
+                                    label={"Collection"}
+                                    placeholder={"PublicKey of the associated collection NFT (optional)"}
+                                    onChange={e => {
+                                        setCollection(e.target.value)
+                                    }}
+                                />
 
                                 <Spacer y={1}/>
 
@@ -131,6 +335,59 @@ const Create: NextPage = () => {
                     </Grid>
 
                     <Grid xs={12} justify={"flex-end"}>
+
+                        <Modal
+                            closeButton={true}
+                            open={isModalVisible}
+                            onClose={closeModal}
+                            width={"425px"}
+                        >
+
+                            <Modal.Header>
+                                <Text h3 weight={"bold"}>Creating NFT</Text>
+                            </Modal.Header>
+
+                            <Modal.Body>
+
+                                <ProgressItem
+                                    progress={metadataUploadProgress}
+                                    text={"Uploading metadata to Arweave"}
+                                />
+
+                                <ProgressItem
+                                    progress={nftCreationProgress}
+                                    text={"Creating NFT"}
+                                />
+
+                                {collection && <ProgressItem
+                                    progress={collectionVerificationProgress}
+                                    text={"Setting and verifying collection"}
+                                />}
+
+                                {nft && <div style={{textAlign: "center"}}>
+
+                                    <Divider/>
+
+                                    <Spacer y={0.5}/>
+
+                                    <Text>NFT Created! View on the explorer:</Text>
+
+                                    <Link href={`https://explorer.solana.com/address/${nft.mint}?cluster=${mx.cluster}`}>
+                                        <a target={"_blank"} style={{
+                                            color: theme.colors.primary.computedValue,
+                                            fontSize: theme.fontSizes.sm.computedValue
+                                        }}>
+                                            {nft.mint.toString()}
+                                        </a>
+                                    </Link>
+
+                                </div>}
+
+                            </Modal.Body>
+
+                            <Modal.Footer/>
+
+                        </Modal>
 
                         <Button
                             disabled={!(name && symbol && description && image && walletAdapter.connected)}
