@@ -113,15 +113,27 @@ const Create: NextPage = () => {
 
                             <Card.Body>
 
-                                <Input label={"Name"} onChange={e => {
-                                    setName(e.target.value)
-                                }}/>
+                                <div style={{display: "flex", alignItems: "center"}}>
 
-                                <Spacer y={1}/>
+                                    <Input
+                                        label={"Name"}
+                                        fullWidth={true}
+                                        onChange={e => {
+                                            setName(e.target.value)
+                                        }}
+                                    />
 
-                                <Input label={"Symbol"} onChange={e => {
-                                    setSymbol(e.target.value)
-                                }}/>
+                                    <Spacer x={1}/>
+
+                                    <Input
+                                        label={"Symbol"}
+                                        fullWidth={true}
+                                        onChange={e => {
+                                            setSymbol(e.target.value)
+                                        }}
+                                    />
+
+                                </div>
 
                                 <Spacer y={1}/>
 
