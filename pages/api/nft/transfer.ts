@@ -24,7 +24,9 @@ export default async function handler(
     switch (req.method) {
 
         case "POST":
-            return post(req, res)
+            return basicAuthMiddleware(req)
+                ? post(req, res)
+                : res.status(StatusCodes.UNAUTHORIZED).json(AUTHORIZATION_FAILED)
 
         default:
             methodNotAllowedResponse(res, req.method, ["POST"])
@@ -43,11 +45,6 @@ async function post(
 
     const connection = getConnection()
     const mx = getMetaplex()
-
-    const authorized = basicAuthMiddleware(req);
-    if (!authorized) {
-        return res.status(StatusCodes.UNAUTHORIZED).json(AUTHORIZATION_FAILED);
-    }
 
     // obtain NFT to transfer
     const nft: Nft = await mx.nfts().findByMint(new PublicKey(token));

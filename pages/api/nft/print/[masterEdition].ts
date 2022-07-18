@@ -26,7 +26,9 @@ export default async function handler(
             return get(req, res)
 
         case "POST":
-            return post(req, res)
+            return basicAuthMiddleware(req)
+                ? post(req, res)
+                : res.status(StatusCodes.UNAUTHORIZED).json(AUTHORIZATION_FAILED)
 
         default:
             methodNotAllowedResponse(res, req.method, ["GET", "POST"])
@@ -65,11 +67,6 @@ async function post(
     const to = req.query.to
 
     const connection = getConnection()
-
-    const authorized = basicAuthMiddleware(req);
-    if (!authorized) {
-        return res.status(StatusCodes.UNAUTHORIZED).json(AUTHORIZATION_FAILED);
-    }
 
     const printNft: any = await signable_metaplex.nfts()
         .printNewEdition(new PublicKey(masterEdition));
