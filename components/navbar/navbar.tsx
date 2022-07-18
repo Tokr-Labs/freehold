@@ -25,15 +25,23 @@ const Navbar = () => {
 
             <Container>
 
-                <Grid.Container gap={2} style={{margin: "0 -12px", padding: "0 12px"}}>
+                <Grid.Container
+                    gap={2}
+                    alignItems={"center"}
+                    style={{margin: "0 -12px", padding: "0 12px"}}
+                >
 
                     <Grid xs={4}>
                         <Link href={"/"}>
-                            <Button auto light>
-                                <Text size={40} weight={"extrabold"}>
+                            <a>
+                                <Text
+                                    size={40}
+                                    weight={"extrabold"}
+                                    style={{lineHeight: theme.lineHeights.sm.computedValue}}
+                                >
                                     Freehold
                                 </Text>
-                            </Button>
+                            </a>
                         </Link>
                     </Grid>
 
