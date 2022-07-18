@@ -8,7 +8,11 @@ const Footer = () => {
     const isDark = useTheme().isDark
 
     return (
-        <div style={{background: theme.colors.accents0.computedValue, marginTop: "auto"}}>
+        <div style={{
+            marginTop: "auto",
+            background: theme.colors.backgroundContrast.computedValue,
+            boxShadow: theme.shadows.sm.computedValue
+        }}>
 
             <Container>
 

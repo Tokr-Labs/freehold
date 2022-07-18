@@ -17,7 +17,10 @@ const Navbar = () => {
     const isDark = useTheme().isDark
 
     return (
-        <div style={{background: theme.colors.accents0.computedValue}}>
+        <div style={{
+            background: theme.colors.backgroundContrast.computedValue,
+            boxShadow: theme.shadows.sm.computedValue
+        }}>
 
             <Container>
 
