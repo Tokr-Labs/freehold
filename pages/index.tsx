@@ -25,7 +25,8 @@ const Home: NextPage = () => {
                                     css={{
                                         textGradient: "0deg, $purple600 -20%, $pink600 100%",
                                         letterSpacing: theme.letterSpacings.tight.computedValue,
-                                        lineHeight: theme.lineHeights.sm.computedValue
+                                        lineHeight: theme.lineHeights.xs.computedValue,
+                                        paddingBottom: "4px"
                                     }}
                                 >
                                     Solana NFTs made easy&nbsp;
