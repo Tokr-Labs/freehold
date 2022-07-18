@@ -1,5 +1,5 @@
 import React, {useContext, useState} from "react";
-import {Dropdown, Spacer} from "@nextui-org/react";
+import {Dropdown, Spacer, theme} from "@nextui-org/react";
 import {FiServer} from "react-icons/fi";
 import {WalletAdapterNetwork} from "@solana/wallet-adapter-base";
 import {NetworkContext} from "../../contexts/network-context";
@@ -19,7 +19,11 @@ export const NavbarRpcNetworkDropdown = () => {
                 flat
                 ripple={false}
                 animated={false}
-                css={{tt: "capitalize"}}
+                css={{
+                    tt: "capitalize",
+                    color: theme.colors.text.computedValue,
+                    backgroundColor: theme.colors.neutralLight.computedValue
+                }}
             >
 
                 <FiServer/>
