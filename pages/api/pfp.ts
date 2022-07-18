@@ -3,7 +3,7 @@ import {PublicKey} from "@solana/web3.js";
 import {corsMiddleware} from "../../utils/middleware";
 import {getProfilePicture, ProfilePicture} from "@solflare-wallet/pfp";
 import {GetPfpRequest} from "./_requests";
-import {MissingArgsResponse} from "./_responses";
+import {MissingArgsResponse, methodNotAllowedResponse} from "./_responses";
 import {StatusCodes} from "http-status-codes";
 import {getConnection} from "../../utils/get-connection";
 
@@ -20,8 +20,7 @@ export default async function handler(
             return get(req, res)
 
         default:
-            res.setHeader("Allow", ["GET"]);
-            res.status(StatusCodes.METHOD_NOT_ALLOWED).end(`Method ${req.method} Not Allowed`);
+            methodNotAllowedResponse(res, req.method, ["GET"])
 
     }
 

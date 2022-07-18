@@ -6,7 +6,7 @@ import {adminWallet, AUTHORIZATION_FAILED} from "../_constants";
 import {transferAdminNftTransaction} from "../../../library/nft/transfer";
 import {basicAuthMiddleware, corsMiddleware} from "../../../utils/middleware";
 import {PostTransferRequest} from "../_requests";
-import {AuthorizationFailureResponse, SuccessResponse} from "../_responses";
+import {AuthorizationFailureResponse, SuccessResponse, methodNotAllowedResponse} from "../_responses";
 import {StatusCodes} from "http-status-codes";
 import {getConnection} from "../../../utils/get-connection";
 import {getMetaplex} from "../../../utils/get-metaplex";
@@ -27,8 +27,7 @@ export default async function handler(
             return post(req, res)
 
         default:
-            res.setHeader("Allow", ["POST"]);
-            res.status(StatusCodes.METHOD_NOT_ALLOWED).end(`Method ${req.method} Not Allowed`);
+            methodNotAllowedResponse(res, req.method, ["POST"])
 
     }
 

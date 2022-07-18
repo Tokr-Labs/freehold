@@ -1,4 +1,6 @@
 import {Nft} from "@metaplex-foundation/js";
+import {NextApiResponse} from "next";
+import {StatusCodes} from "http-status-codes";
 
 export interface MissingArgsResponse {
     args: string[],
@@ -25,5 +27,17 @@ export interface OwnedNftsResponse {
     user: string,
     nfts: Nft[],
     error?: string
+}
+
+export const methodNotAllowedResponse = (
+    res: NextApiResponse,
+    method: string | undefined,
+    allowed: Array<string>
+) => {
+
+    res.setHeader("Allow", allowed);
+    res.status(StatusCodes.METHOD_NOT_ALLOWED).end(`Method ${method} Not Allowed`);
+    return res
+
 }
 
