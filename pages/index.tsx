@@ -1,5 +1,5 @@
 import type {NextPage} from 'next'
-import {Card, Container, Grid, Image, Text} from "@nextui-org/react";
+import {Card, Container, Grid, Image, Text, theme} from "@nextui-org/react";
 import Link from "next/link";
 import PageWrapper from "../components/page-wrapper";
 
@@ -23,10 +23,12 @@ const Home: NextPage = () => {
                                     size={60}
                                     weight={"bold"}
                                     css={{
-                                        textGradient: "0deg, $purple600 -20%, $pink600 100%"
+                                        textGradient: "0deg, $purple600 -20%, $pink600 100%",
+                                        letterSpacing: theme.letterSpacings.tight.computedValue,
+                                        lineHeight: theme.lineHeights.sm.computedValue
                                     }}
                                 >
-                                    NFT creation made easy&nbsp;
+                                    Solana NFTs made easy&nbsp;
                                 </Text>
 
                             </Grid>
@@ -42,9 +44,8 @@ const Home: NextPage = () => {
                                         </Card.Header>
 
                                         <Card.Body>
-                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                                            sed do eiusmod tempor incididunt ut labore et dolore magna
-                                            aliqua.
+                                            Seamlessly create NFTs with customizable metadata
+                                            and automatic collection verification.
                                         </Card.Body>
 
                                     </Card>
@@ -64,9 +65,8 @@ const Home: NextPage = () => {
                                         </Card.Header>
 
                                         <Card.Body>
-                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                                            sed do eiusmod tempor incididunt ut labore et dolore magna
-                                            aliqua.
+                                            Easily view your NFT holdings, your personal creations,
+                                            specific collection information, and more.
                                         </Card.Body>
 
                                     </Card>
