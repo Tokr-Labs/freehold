@@ -6,6 +6,7 @@ import {FiHome, FiMenu, FiPlus, FiSearch} from "react-icons/fi";
 import {useTheme as useNextTheme} from "next-themes";
 import {NavbarMobileMenuButton} from "./navbar-mobile-menu-button";
 import {NavbarRpcNetworkDropdown} from "./navbar-rpc-network-dropdown";
+import {FaMoon, FaSun} from "react-icons/fa";
 
 const Navbar = () => {
 
@@ -65,6 +66,9 @@ const Navbar = () => {
 
                                 <Switch
                                     checked={isDark}
+                                    iconOff={<FaSun/>}
+                                    iconOn={<FaMoon/>}
+                                    aria-label={"Toggle theme"}
                                     onChange={e => {
                                         setTheme(e.target.checked ? "dark" : "light")
                                     }}

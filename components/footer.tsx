@@ -1,6 +1,7 @@
 import React from "react";
 import {Container, Grid, Switch, Text, theme, useTheme} from "@nextui-org/react";
 import {useTheme as useNextTheme} from "next-themes";
+import {FaMoon, FaSun} from "react-icons/fa";
 
 const Footer = () => {
 
@@ -21,6 +22,9 @@ const Footer = () => {
                     <Grid xs={0} md={5}>
                         <Switch
                             checked={isDark}
+                            iconOff={<FaSun/>}
+                            iconOn={<FaMoon/>}
+                            aria-label={"Toggle theme"}
                             onChange={e => {
                                 setTheme(e.target.checked ? "dark" : "light")
                             }}
