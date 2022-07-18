@@ -1,12 +1,12 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type {NextApiResponse} from 'next';
+import type {NextApiResponse} from "next";
 import {Nft} from "@metaplex-foundation/js";
 import {PublicKey, sendAndConfirmTransaction, Transaction} from "@solana/web3.js";
 import {adminWallet, AUTHORIZATION_FAILED} from "../_constants";
-import {transferAdminNftTransaction} from '../../../library/nft/transfer';
-import {basicAuthMiddleware, corsMiddleware} from '../../../utils/middleware';
+import {transferAdminNftTransaction} from "../../../library/nft/transfer";
+import {basicAuthMiddleware, corsMiddleware} from "../../../utils/middleware";
 import {PostTransferRequest} from "../_requests";
-import {AuthorizationFailureResponse, SuccessResponse} from "../_responses";
+import {AuthorizationFailureResponse, SuccessResponse, methodNotAllowedResponse} from "../_responses";
 import {StatusCodes} from "http-status-codes";
 import {getConnection} from "../../../utils/get-connection";
 import {getMetaplex} from "../../../utils/get-metaplex";
@@ -17,53 +17,55 @@ import {getMetaplex} from "../../../utils/get-metaplex";
 // transfer a print NFT to a new owner
 export default async function handler(
     req: PostTransferRequest,
+    res: NextApiResponse
+) {
+    await corsMiddleware(["POST"], req, res)
+
+    switch (req.method) {
+
+        case "POST":
+            return basicAuthMiddleware(req)
+                ? post(req, res)
+                : res.status(StatusCodes.UNAUTHORIZED).json(AUTHORIZATION_FAILED)
+
+        default:
+            methodNotAllowedResponse(res, req.method, ["POST"])
+
+    }
+
+}
+
+async function post(
+    req: PostTransferRequest,
     res: NextApiResponse<SuccessResponse | AuthorizationFailureResponse>
 ) {
-    // query params -> variables
+
     const token = req.query.token
     const to = req.query.to
 
     const connection = getConnection()
     const mx = getMetaplex()
 
-    await corsMiddleware(["POST"], req, res)
+    // obtain NFT to transfer
+    const nft: Nft = await mx.nfts().findByMint(new PublicKey(token));
 
-    switch (req.method) {
+    // construct tx for transferring it to the destination
+    const tx: Transaction = await transferAdminNftTransaction(
+        nft.mint,
+        new PublicKey(to)
+    );
 
-        case 'POST':
-            const authorized = basicAuthMiddleware(req);
-            if (!authorized) {
-                res.status(StatusCodes.UNAUTHORIZED).json(AUTHORIZATION_FAILED);
-                break;
-            }
+    // sign transaction with admin wallet & send it
+    await sendAndConfirmTransaction(
+        connection,
+        tx,
+        [adminWallet]
+    );
 
-            // obtain NFT to transfer
-            const nft: Nft = await mx.nfts().findByMint(new PublicKey(token));
-
-            // construct tx for transferring it to the destination
-            const tx: Transaction = await transferAdminNftTransaction(
-                nft.mint,
-                new PublicKey(to)
-            );
-
-            // sign transaction with admin wallet & send it
-            await sendAndConfirmTransaction(
-                connection,
-                tx,
-                [adminWallet]
-            );
-
-            const responseBody: SuccessResponse = {
-                success: true,
-                message: `Successfully transferred ${nft.mint} to ${to}`
-            }
-            res.status(StatusCodes.OK).json(responseBody);
-            break;
-
-        default:
-            res.setHeader('Allow', ['POST']);
-            res.status(StatusCodes.METHOD_NOT_ALLOWED).end(`Method ${req.method} Not Allowed`);
-
+    const responseBody: SuccessResponse = {
+        success: true,
+        message: `Successfully transferred ${nft.mint} to ${to}`
     }
+    return res.status(StatusCodes.OK).json(responseBody);
 
 }
