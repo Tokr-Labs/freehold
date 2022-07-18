@@ -16,7 +16,7 @@ import {getMetaplex} from "../../../../utils/get-metaplex";
 // creates a print NFT (copy) of the provided master NFT
 export default async function handler(
     req: GetPrintNftRequest | PostPrintNftRequest,
-    res: NextApiResponse<PrintNftResponse | AuthorizationFailureResponse>
+    res: NextApiResponse
 ) {
     await corsMiddleware(["GET", "POST"], req, res)
 
