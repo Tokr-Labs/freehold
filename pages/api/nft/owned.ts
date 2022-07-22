@@ -57,7 +57,7 @@ async function get(
     // if a collection was provided, filter the list of NFTs for the collection
     if (collection) {
         nfts = nfts.filter(nft => {
-            nft.collection?.key.equals(new PublicKey(collection))
+            return nft.collection?.key.equals(new PublicKey(collection))
         });
     }
 
