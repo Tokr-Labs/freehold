@@ -6,6 +6,7 @@ import {FiHome, FiMenu, FiPlus, FiSearch} from "react-icons/fi";
 import {useTheme as useNextTheme} from "next-themes";
 import {NavbarMobileMenuButton} from "./navbar-mobile-menu-button";
 import {NavbarRpcNetworkDropdown} from "./navbar-rpc-network-dropdown";
+import {FaMoon, FaSun} from "react-icons/fa";
 
 const Navbar = () => {
 
@@ -17,19 +18,30 @@ const Navbar = () => {
     const isDark = useTheme().isDark
 
     return (
-        <div style={{background: theme.colors.accents0.computedValue}}>
+        <div style={{
+            background: theme.colors.backgroundContrast.computedValue,
+            boxShadow: theme.shadows.sm.computedValue
+        }}>
 
             <Container>
 
-                <Grid.Container gap={2} style={{margin: "0 -12px", padding: "0 12px"}}>
+                <Grid.Container
+                    gap={2}
+                    alignItems={"center"}
+                    style={{margin: "0 -12px", padding: "0 12px"}}
+                >
 
                     <Grid xs={4}>
                         <Link href={"/"}>
-                            <Button auto light>
-                                <Text size={40} weight={"extrabold"}>
+                            <a>
+                                <Text
+                                    size={40}
+                                    weight={"extrabold"}
+                                    style={{lineHeight: theme.lineHeights.sm.computedValue}}
+                                >
                                     Freehold
                                 </Text>
-                            </Button>
+                            </a>
                         </Link>
                     </Grid>
 
@@ -62,6 +74,9 @@ const Navbar = () => {
 
                                 <Switch
                                     checked={isDark}
+                                    iconOff={<FaSun/>}
+                                    iconOn={<FaMoon/>}
+                                    aria-label={"Toggle theme"}
                                     onChange={e => {
                                         setTheme(e.target.checked ? "dark" : "light")
                                     }}

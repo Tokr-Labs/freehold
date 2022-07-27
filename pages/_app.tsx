@@ -2,7 +2,7 @@ import type {AppProps} from 'next/app'
 import {NextUIProvider} from "@nextui-org/react";
 import {ConnectionProvider, useConnection, useWallet, WalletProvider} from "@solana/wallet-adapter-react";
 import {WalletAdapterNetwork} from "@solana/wallet-adapter-base";
-import {clusterApiUrl, Connection} from "@solana/web3.js";
+import {Connection} from "@solana/web3.js";
 import {WalletModalProvider} from "@solana/wallet-adapter-react-ui";
 import {useEffect, useMemo, useState} from "react";
 import {PhantomWalletAdapter} from "@solana/wallet-adapter-wallets";
@@ -13,11 +13,11 @@ import {ThemeProvider} from "next-themes";
 import {bundlrStorage, Metaplex, walletAdapterIdentity} from '@metaplex-foundation/js';
 import {NetworkContext} from '../contexts/network-context';
 import {MetaplexContext} from '../contexts/metaplex-context';
+import { getRPC } from '../utils/get-connection';
 
 require('@solana/wallet-adapter-react-ui/styles.css');
 
 function MyApp({Component, pageProps}: AppProps) {
-
     const [network, setNetwork] = useState<WalletAdapterNetwork>(
         process.env.VERCEL_ENV === 'production'
             ? WalletAdapterNetwork.Mainnet
@@ -25,7 +25,7 @@ function MyApp({Component, pageProps}: AppProps) {
     );
 
     const connection = useMemo(
-        () => new Connection(clusterApiUrl(network)),
+        () => new Connection(getRPC(network)),
         [network]
     )
 
@@ -34,7 +34,6 @@ function MyApp({Component, pageProps}: AppProps) {
     const [metaplex, setMetaplex] = useState<Metaplex>(Metaplex.make(connection));
 
     useEffect(() => {
-
         const bundlrAddress = network === WalletAdapterNetwork.Mainnet
             ? "https://node2.bundlr.network"
             : "https://devnet.bundlr.network";
@@ -43,7 +42,7 @@ function MyApp({Component, pageProps}: AppProps) {
             .use(walletAdapterIdentity(walletAdapter))
             .use(bundlrStorage({
                 address: bundlrAddress,
-                providerUrl: clusterApiUrl(network),
+                providerUrl: getRPC(network),
                 timeout: 60000,
             }))
 
@@ -76,7 +75,7 @@ function MyApp({Component, pageProps}: AppProps) {
         >
             <NextUIProvider>
                 <NetworkContext.Provider value={{network, setNetwork}}>
-                    <ConnectionProvider endpoint={clusterApiUrl(network)}>
+                    <ConnectionProvider endpoint={getRPC(network)}>
                         <WalletProvider wallets={wallets}>
                             <WalletModalProvider>
                                 <MetaplexContext.Provider value={metaplex}>

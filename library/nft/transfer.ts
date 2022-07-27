@@ -1,11 +1,11 @@
-
-import { PublicKey, TransactionInstruction, Connection, Keypair, Transaction } from '@solana/web3.js';
+import {Connection, Keypair, PublicKey, Transaction, TransactionInstruction} from '@solana/web3.js';
 import {
+    createTransferInstruction,
     getAssociatedTokenAddress,
-    getOrCreateAssociatedTokenAccount,
-    createTransferInstruction
+    getOrCreateAssociatedTokenAccount
 } from '@solana/spl-token';
-import { adminWallet, connection } from '../../pages/api/constants';
+import {adminWallet} from '../../pages/api/_constants';
+import {getConnection} from "../../utils/get-connection";
 
 /** Parameters for {@link sendToken} **/
 export interface SendTokenParams {
@@ -64,6 +64,9 @@ export const getTokenTransferInstructions = async ({
 export const transferAdminNftTransaction = async (
     mint: PublicKey, to: PublicKey
     ): Promise<Transaction> => {
+
+    const connection = getConnection()
+
     // associated token account for the NFT & admin wallet
     const ata = await getAssociatedTokenAddress(mint, adminWallet.publicKey);
 

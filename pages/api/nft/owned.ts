@@ -1,62 +1,85 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type {NextApiRequest, NextApiResponse} from 'next';
+import type {NextApiResponse} from "next";
 import {Nft} from "@metaplex-foundation/js";
 import {PublicKey} from "@solana/web3.js";
-import {metaplex, MissingArgs} from "../constants";
-import {getMetaplex, getSolanaConnection} from '../util';
 import {corsMiddleware} from "../../../utils/middleware";
-
-type Data = {
-    user: string,
-    nfts: Nft[],
-    error?: string
-}
+import {GetOwnedNftsRequest} from "../_requests";
+import {MissingArgsResponse, OwnedNftsResponse, methodNotAllowedResponse} from "../_responses";
+import {StatusCodes} from "http-status-codes";
+import {getConnection} from "../../../utils/get-connection";
+import {getMetaplex} from "../../../utils/get-metaplex";
 
 // example GET:
 // api/nft/owned?user=3y1FhWu7XwyRxjfwqCD2JtuC9adf1dG4CSjijWb8iAMw
 // optional `collection` query param for filtering by collection
 export default async function handler(
-    req: NextApiRequest,
-    res: NextApiResponse<Data | MissingArgs>
+    req: GetOwnedNftsRequest,
+    res: NextApiResponse
 ) {
-    // parse query params into variables
-    const {query: {user, collection}, method} = req;
-    const metadata: boolean = req.query.metadata === 'true';
-    const network = req.query.network as string;
-
-    // use specific network, if provided by the request. otherwise use the default
-    const mx = network ? getMetaplex(getSolanaConnection(network)) : metaplex;
-
     await corsMiddleware(["GET"], req, res)
 
-    // handle the request -- fetching user's NFTs w/ optional collection filter
-    switch (method) {
-        case 'GET':
-            // validate that a user was provided
-            if (!user) {
-                res.status(400).json({args: ["user"], error: "Must specify publickey (owner of NFTs to look-up)"});
-                return;
-            }
+    switch (req.method) {
 
-            // obtain user's list of metaplex NFTs
-            let nfts: Nft[] = await mx.nfts().findAllByOwner(new PublicKey(user));
+        case "GET":
+            return get(req, res)
 
-            // if a collection was provided, filter the list of NFTs for the collection
-            if (collection) {
-                nfts = nfts.filter(nft => nft.collection?.key.equals(new PublicKey(collection)));
-            }
-
-            if (metadata) {
-                // fetch metadata for each NFT
-                for (let i = 0; i < nfts.length; i++) {
-                    await nfts[i].metadataTask.run().catch(console.error);
-                }
-            }
-
-            res.status(200).json({user: user as string, nfts});
-            break;
         default:
-            res.setHeader('Allow', ['GET']);
-            res.status(405).end(`Method ${method} Not Allowed`);
+            methodNotAllowedResponse(res, req.method, ["GET"])
+
     }
+}
+
+async function get(
+    req: GetOwnedNftsRequest,
+    res: NextApiResponse<OwnedNftsResponse | MissingArgsResponse>
+) {
+
+    const user = req.query.user
+    const collection = req.query.collection
+    const metadata = req.query.metadata
+    const editionInfo = req.query.editionInfo
+    const network = req.query.network
+
+    const connection = getConnection(network)
+    const mx = getMetaplex(connection);
+
+    // validate that a user was provided
+    if (!user) {
+        const responseBody: MissingArgsResponse = {
+            args: ["user"],
+            error: "Must specify the user's publickey"
+        }
+        return res.status(StatusCodes.BAD_REQUEST).json(responseBody);
+    }
+
+    // obtain user"s list of metaplex NFTs
+    let nfts: Nft[] = await mx.nfts().findAllByOwner(new PublicKey(user));
+
+    // if a collection was provided, filter the list of NFTs for the collection
+    if (collection) {
+        nfts = nfts.filter(nft => {
+            return nft.collection?.key.equals(new PublicKey(collection))
+        });
+    }
+
+    if (metadata === "true") {
+        // fetch metadata for each NFT
+        for (const nft of nfts) {
+            await nft.metadataTask.run().catch(console.error);
+        }
+    }
+
+    if (editionInfo === "true") {
+        // run the editionTask for each NFT
+        for (const nft of nfts) {
+            await nft.editionTask.run().catch(console.error)
+        }
+    }
+
+    const responseBody: OwnedNftsResponse = {
+        user,
+        nfts
+    }
+    return res.status(StatusCodes.OK).json(responseBody);
+
 }
