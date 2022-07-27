@@ -1,5 +1,9 @@
 import {WalletAdapterNetwork} from "@solana/wallet-adapter-base";
-import {clusterApiUrl, Connection} from "@solana/web3.js";
+import {Connection} from "@solana/web3.js";
+
+export const getRPC = (network?: string | WalletAdapterNetwork | undefined): string => {
+    return (network === WalletAdapterNetwork.Mainnet ? process.env.NEXT_PUBLIC_RPC_MAINNET_BETA : process.env.NEXT_PUBLIC_RPC_DEVNET)!;
+}
 
 export const getConnection = (network?: string | WalletAdapterNetwork | undefined): Connection => {
 
@@ -9,12 +13,12 @@ export const getConnection = (network?: string | WalletAdapterNetwork | undefine
             ? WalletAdapterNetwork.Mainnet
             : WalletAdapterNetwork.Devnet
 
-        return new Connection(clusterApiUrl(nw))
+        return new Connection(getRPC(nw));
     }
 
     // by default, return mainnet for production and devnet otherwise
     return process.env.VERCEL_ENV === 'production'
-        ? new Connection(clusterApiUrl(WalletAdapterNetwork.Mainnet))
-        : new Connection(clusterApiUrl(WalletAdapterNetwork.Devnet))
+        ? new Connection(process.env.NEXT_PUBLIC_RPC_MAINNET_BETA!)
+        : new Connection(process.env.NEXT_PUBLIC_RPC_DEVNET!)
 
 }
