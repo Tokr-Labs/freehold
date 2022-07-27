@@ -5,6 +5,7 @@ export interface GetOwnedNftsRequest extends NextApiRequest {
         user: string,
         collection?: string,
         metadata?: string,
+        editionInfo?: string,
         network?: string
     };
 }

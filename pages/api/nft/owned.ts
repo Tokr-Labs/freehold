@@ -37,6 +37,7 @@ async function get(
     const user = req.query.user
     const collection = req.query.collection
     const metadata = req.query.metadata
+    const editionInfo = req.query.editionInfo
     const network = req.query.network
 
     const connection = getConnection(network)
@@ -65,6 +66,13 @@ async function get(
         // fetch metadata for each NFT
         for (const nft of nfts) {
             await nft.metadataTask.run().catch(console.error);
+        }
+    }
+
+    if (editionInfo === "true") {
+        // run the editionTask for each NFT
+        for (const nft of nfts) {
+            await nft.editionTask.run().catch(console.error)
         }
     }
 
