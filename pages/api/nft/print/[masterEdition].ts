@@ -1,12 +1,18 @@
 import type {NextApiResponse} from "next";
 import {PublicKey, sendAndConfirmTransaction} from "@solana/web3.js";
-import {adminWallet, AUTHORIZATION_FAILED, signable_metaplex} from "../../_constants";
 import {basicAuthMiddleware, corsMiddleware} from "../../../../utils/middleware";
 import {transferAdminNftTransaction} from "../../../../library/nft/transfer";
 import {PostPrintNftRequest} from "../../_requests";
-import {AuthorizationFailureResponse, methodNotAllowedResponse, PrintNftResponse} from "../../_responses";
+import {
+    AuthorizationFailureResponse,
+    methodNotAllowedResponse,
+    PrintNftResponse,
+    unauthorizedResponse
+} from "../../_responses";
 import {StatusCodes} from "http-status-codes";
 import {getConnection} from "../../../../utils/get-connection";
+import {getAdminMetaplex} from "../../../../utils/get-admin-metaplex";
+import {adminWallet} from "../../../../utils/constants";
 
 export default async function handler(
     req: PostPrintNftRequest,
@@ -19,7 +25,7 @@ export default async function handler(
         case "POST":
             return basicAuthMiddleware(req)
                 ? post(req, res)
-                : res.status(StatusCodes.UNAUTHORIZED).json(AUTHORIZATION_FAILED)
+                : unauthorizedResponse(res)
 
         default:
             methodNotAllowedResponse(res, req.method, ["GET", "POST"])
@@ -37,8 +43,9 @@ async function post(
     const to = req.query.to
 
     const connection = getConnection()
+    const adminMetaplex = getAdminMetaplex(connection)
 
-    const printNft: any = await signable_metaplex.nfts()
+    const printNft: any = await adminMetaplex.nfts()
         .printNewEdition(new PublicKey(masterEdition));
 
     // TODO - better error handling

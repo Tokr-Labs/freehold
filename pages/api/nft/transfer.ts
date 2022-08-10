@@ -2,14 +2,19 @@
 import type {NextApiResponse} from "next";
 import {Nft} from "@metaplex-foundation/js";
 import {PublicKey, sendAndConfirmTransaction, Transaction} from "@solana/web3.js";
-import {adminWallet, AUTHORIZATION_FAILED} from "../_constants";
 import {transferAdminNftTransaction} from "../../../library/nft/transfer";
 import {basicAuthMiddleware, corsMiddleware} from "../../../utils/middleware";
 import {PostTransferRequest} from "../_requests";
-import {AuthorizationFailureResponse, SuccessResponse, methodNotAllowedResponse} from "../_responses";
+import {
+    AuthorizationFailureResponse,
+    methodNotAllowedResponse,
+    SuccessResponse,
+    unauthorizedResponse
+} from "../_responses";
 import {StatusCodes} from "http-status-codes";
 import {getConnection} from "../../../utils/get-connection";
 import {getMetaplex} from "../../../utils/get-metaplex";
+import {adminWallet} from "../../../utils/constants";
 
 
 // example POST:
@@ -26,7 +31,7 @@ export default async function handler(
         case "POST":
             return basicAuthMiddleware(req)
                 ? post(req, res)
-                : res.status(StatusCodes.UNAUTHORIZED).json(AUTHORIZATION_FAILED)
+                : unauthorizedResponse(res)
 
         default:
             methodNotAllowedResponse(res, req.method, ["POST"])

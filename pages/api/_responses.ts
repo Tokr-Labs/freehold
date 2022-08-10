@@ -29,6 +29,16 @@ export interface OwnedNftsResponse {
     error?: string
 }
 
+export const unauthorizedResponse = (
+    res: NextApiResponse,
+) => {
+    const AUTHORIZATION_FAILED: AuthorizationFailureResponse = {
+        message: "Authorization Failed",
+        error: "Invalid authorization",
+    }
+    return res.status(StatusCodes.UNAUTHORIZED).json(AUTHORIZATION_FAILED)
+}
+
 export const methodNotAllowedResponse = (
     res: NextApiResponse,
     method: string | undefined,

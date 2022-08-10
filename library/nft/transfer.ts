@@ -4,8 +4,8 @@ import {
     getAssociatedTokenAddress,
     getOrCreateAssociatedTokenAccount
 } from '@solana/spl-token';
-import {adminWallet} from '../../pages/api/_constants';
 import {getConnection} from "../../utils/get-connection";
+import {adminWallet} from "../../utils/constants";
 
 /** Parameters for {@link sendToken} **/
 export interface SendTokenParams {
