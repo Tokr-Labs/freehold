@@ -23,10 +23,3 @@ export interface PostPrintNftRequest extends NextApiRequest {
         to?: string
     }
 }
-
-export interface PostTransferRequest extends NextApiRequest {
-    query: {
-        token: string,
-        to: string
-    }
-}
