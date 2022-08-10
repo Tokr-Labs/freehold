@@ -1,10 +1,15 @@
 import type {NextApiResponse} from "next";
 import {PublicKey, sendAndConfirmTransaction} from "@solana/web3.js";
-import {adminWallet, AUTHORIZATION_FAILED, signable_metaplex} from "../../_constants";
+import {adminWallet, signable_metaplex} from "../../_constants";
 import {basicAuthMiddleware, corsMiddleware} from "../../../../utils/middleware";
 import {transferAdminNftTransaction} from "../../../../library/nft/transfer";
 import {PostPrintNftRequest} from "../../_requests";
-import {AuthorizationFailureResponse, methodNotAllowedResponse, PrintNftResponse} from "../../_responses";
+import {
+    AuthorizationFailureResponse,
+    methodNotAllowedResponse,
+    PrintNftResponse,
+    unauthorizedResponse
+} from "../../_responses";
 import {StatusCodes} from "http-status-codes";
 import {getConnection} from "../../../../utils/get-connection";
 
@@ -19,7 +24,7 @@ export default async function handler(
         case "POST":
             return basicAuthMiddleware(req)
                 ? post(req, res)
-                : res.status(StatusCodes.UNAUTHORIZED).json(AUTHORIZATION_FAILED)
+                : unauthorizedResponse(res)
 
         default:
             methodNotAllowedResponse(res, req.method, ["GET", "POST"])
