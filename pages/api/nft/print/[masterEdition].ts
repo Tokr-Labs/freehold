@@ -51,7 +51,7 @@ async function post(
         .findByMint(new PublicKey(masterEdition))
         .run()
 
-    const printNft: Nft = await adminMetaplex.nfts()
+    const printNft = await adminMetaplex.nfts()
         .printNewEdition(masterEditionNft.address, {
             newUpdateAuthority: masterEditionNft.updateAuthorityAddress,
             newOwner: toAddress
@@ -60,9 +60,9 @@ async function post(
 
     const responseBody: PrintNftResponse = {
         masterEdition,
-        nft: printNft,
+        nft: printNft.nft,
         success: true,
-        message: `Minted ${printNft.address} to ${to}`
+        message: `Minted ${printNft.nft.address} to ${to}`
     }
 
     return res.status(StatusCodes.OK).json(responseBody);
