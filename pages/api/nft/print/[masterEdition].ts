@@ -1,7 +1,6 @@
 import type {NextApiResponse} from "next";
-import {PublicKey, sendAndConfirmTransaction} from "@solana/web3.js";
+import {PublicKey} from "@solana/web3.js";
 import {basicAuthMiddleware, corsMiddleware} from "../../../../utils/middleware";
-import {transferAdminNftTransaction} from "../../../../library/nft/transfer";
 import {PostPrintNftRequest} from "../../_requests";
 import {
     AuthorizationFailureResponse,
@@ -12,7 +11,6 @@ import {
 import {StatusCodes} from "http-status-codes";
 import {getConnection} from "../../../../utils/get-connection";
 import {getAdminMetaplex} from "../../../../utils/get-admin-metaplex";
-import {adminWallet} from "../../../../utils/constants";
 import {Nft} from "@metaplex-foundation/js";
 
 export default async function handler(
@@ -46,34 +44,27 @@ async function post(
     const connection = getConnection()
     const adminMetaplex = getAdminMetaplex(connection)
 
-    const printNft: Nft = await adminMetaplex.nfts()
-        .printNewEdition(new PublicKey(masterEdition))
+    // TODO - better error handling
+    const toAddress = to ? new PublicKey(to) : adminMetaplex.identity().publicKey
+
+    const masterEditionNft: Nft = await adminMetaplex.nfts()
+        .findByMint(new PublicKey(masterEdition))
         .run()
 
-    // TODO - better error handling
-    if (to) {
-        const tx = await transferAdminNftTransaction(
-            printNft.address,
-            new PublicKey(to)
-        );
+    const printNft: Nft = await adminMetaplex.nfts()
+        .printNewEdition(masterEditionNft.address, {
+            newUpdateAuthority: masterEditionNft.updateAuthorityAddress,
+            newOwner: toAddress
+        })
+        .run()
 
-        await sendAndConfirmTransaction(
-            connection,
-            tx,
-            [adminWallet]
-        );
-
-        const responseBody: PrintNftResponse = {
-            masterEdition,
-            nft: printNft,
-            success: true,
-            message: `Minted ${printNft.address} to ${to}`
-        }
-
-        return res.status(StatusCodes.OK).json(responseBody);
+    const responseBody: PrintNftResponse = {
+        masterEdition,
+        nft: printNft,
+        success: true,
+        message: `Minted ${printNft.address} to ${to}`
     }
 
-    return res.status(StatusCodes.OK).json({masterEdition, nft: printNft});
-
+    return res.status(StatusCodes.OK).json(responseBody);
 
 }
