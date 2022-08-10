@@ -2,7 +2,6 @@
 import type {NextApiResponse} from "next";
 import {Nft} from "@metaplex-foundation/js";
 import {PublicKey, sendAndConfirmTransaction, Transaction} from "@solana/web3.js";
-import {adminWallet} from "../_constants";
 import {transferAdminNftTransaction} from "../../../library/nft/transfer";
 import {basicAuthMiddleware, corsMiddleware} from "../../../utils/middleware";
 import {PostTransferRequest} from "../_requests";
@@ -15,6 +14,7 @@ import {
 import {StatusCodes} from "http-status-codes";
 import {getConnection} from "../../../utils/get-connection";
 import {getMetaplex} from "../../../utils/get-metaplex";
+import {adminWallet} from "../../../utils/constants";
 
 
 // example POST:
