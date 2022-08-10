@@ -47,7 +47,9 @@ async function post(
     const mx = getMetaplex()
 
     // obtain NFT to transfer
-    const nft: Nft = await mx.nfts().findByMint(new PublicKey(token));
+    const nft: Nft = await mx.nfts()
+        .findByMint(new PublicKey(token))
+        .run()
 
     // construct tx for transferring it to the destination
     const tx: Transaction = await transferAdminNftTransaction(
