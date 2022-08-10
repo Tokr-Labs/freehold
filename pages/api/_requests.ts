@@ -17,13 +17,6 @@ export interface GetPfpRequest extends NextApiRequest {
     }
 }
 
-export interface GetPrintNftRequest extends NextApiRequest {
-    query: {
-        masterEdition: string,
-        to?: string
-    }
-}
-
 export interface PostPrintNftRequest extends NextApiRequest {
     query: {
         masterEdition: string,
