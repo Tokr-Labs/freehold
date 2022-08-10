@@ -1,4 +1,4 @@
-import {Nft} from "@metaplex-foundation/js";
+import {Metadata, Nft} from "@metaplex-foundation/js";
 import {NextApiResponse} from "next";
 import {StatusCodes} from "http-status-codes";
 
@@ -25,7 +25,7 @@ export interface PrintNftResponse {
 
 export interface OwnedNftsResponse {
     user: string,
-    nfts: Nft[],
+    nfts: Nft[] | Metadata[],
     error?: string
 }
 
