@@ -1,17 +1,14 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type {NextApiResponse} from "next";
-import {Nft} from "@metaplex-foundation/js";
+import {Metadata, Nft} from "@metaplex-foundation/js";
 import {PublicKey} from "@solana/web3.js";
 import {corsMiddleware} from "../../../utils/middleware";
 import {GetOwnedNftsRequest} from "../_requests";
-import {MissingArgsResponse, OwnedNftsResponse, methodNotAllowedResponse} from "../_responses";
+import {methodNotAllowedResponse, MissingArgsResponse, OwnedNftsResponse} from "../_responses";
 import {StatusCodes} from "http-status-codes";
 import {getConnection} from "../../../utils/get-connection";
 import {getMetaplex} from "../../../utils/get-metaplex";
 
-// example GET:
-// api/nft/owned?user=3y1FhWu7XwyRxjfwqCD2JtuC9adf1dG4CSjijWb8iAMw
-// optional `collection` query param for filtering by collection
 export default async function handler(
     req: GetOwnedNftsRequest,
     res: NextApiResponse
@@ -52,33 +49,30 @@ async function get(
         return res.status(StatusCodes.BAD_REQUEST).json(responseBody);
     }
 
-    // obtain user"s list of metaplex NFTs
-    let nfts: Nft[] = await mx.nfts().findAllByOwner(new PublicKey(user));
+    // fetching NFTs without json, edition, or mint info loaded
+    let nfts: Metadata[] = await mx.nfts()
+        .findAllByOwner(new PublicKey(user))
+        .run()
 
     // if a collection was provided, filter the list of NFTs for the collection
     if (collection) {
         nfts = nfts.filter(nft => {
-            return nft.collection?.key.equals(new PublicKey(collection))
+            return nft.collection?.address.equals(new PublicKey(collection))
         });
     }
 
+    // if requested, loading the json, edition, and mint info
+    let loadedNfts: Nft[] = []
     if (metadata === "true") {
-        // fetch metadata for each NFT
         for (const nft of nfts) {
-            await nft.metadataTask.run().catch(console.error);
-        }
-    }
-
-    if (editionInfo === "true") {
-        // run the editionTask for each NFT
-        for (const nft of nfts) {
-            await nft.editionTask.run().catch(console.error)
+            let loaded = await mx.nfts().load(nft).run()
+            loadedNfts.push(loaded)
         }
     }
 
     const responseBody: OwnedNftsResponse = {
         user,
-        nfts
+        nfts: metadata === "true" ? loadedNfts : nfts
     }
     return res.status(StatusCodes.OK).json(responseBody);
 
