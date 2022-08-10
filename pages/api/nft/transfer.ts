@@ -1,4 +1,3 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type {NextApiResponse} from "next";
 import {Nft} from "@metaplex-foundation/js";
 import {PublicKey, sendAndConfirmTransaction, Transaction} from "@solana/web3.js";
@@ -16,10 +15,6 @@ import {getConnection} from "../../../utils/get-connection";
 import {getMetaplex} from "../../../utils/get-metaplex";
 import {adminWallet} from "../../../utils/constants";
 
-
-// example POST:
-// api/nft/transfer {token: GPKoJbgqY1NgH3bxmGFvoLq3GL39RKqEtCqEDttTNYFU, to: 6k7PDpk7QsRJQAspUvFiaDCoe5GQDe96vmWx1L3Gy39H}
-// transfer a print NFT to a new owner
 export default async function handler(
     req: PostTransferRequest,
     res: NextApiResponse
@@ -56,7 +51,7 @@ async function post(
 
     // construct tx for transferring it to the destination
     const tx: Transaction = await transferAdminNftTransaction(
-        nft.mint,
+        nft.address,
         new PublicKey(to)
     );
 
@@ -69,7 +64,7 @@ async function post(
 
     const responseBody: SuccessResponse = {
         success: true,
-        message: `Successfully transferred ${nft.mint} to ${to}`
+        message: `Successfully transferred ${nft.address} to ${to}`
     }
     return res.status(StatusCodes.OK).json(responseBody);
 
