@@ -13,6 +13,7 @@ import {StatusCodes} from "http-status-codes";
 import {getConnection} from "../../../../utils/get-connection";
 import {getAdminMetaplex} from "../../../../utils/get-admin-metaplex";
 import {adminWallet} from "../../../../utils/constants";
+import {Nft} from "@metaplex-foundation/js";
 
 export default async function handler(
     req: PostPrintNftRequest,
@@ -45,13 +46,14 @@ async function post(
     const connection = getConnection()
     const adminMetaplex = getAdminMetaplex(connection)
 
-    const printNft: any = await adminMetaplex.nfts()
-        .printNewEdition(new PublicKey(masterEdition));
+    const printNft: Nft = await adminMetaplex.nfts()
+        .printNewEdition(new PublicKey(masterEdition))
+        .run()
 
     // TODO - better error handling
     if (to) {
         const tx = await transferAdminNftTransaction(
-            printNft.nft.mint,
+            printNft.address,
             new PublicKey(to)
         );
 
@@ -65,7 +67,7 @@ async function post(
             masterEdition,
             nft: printNft,
             success: true,
-            message: `Minted ${printNft.nft.mint} to ${to}`
+            message: `Minted ${printNft.address} to ${to}`
         }
 
         return res.status(StatusCodes.OK).json(responseBody);
