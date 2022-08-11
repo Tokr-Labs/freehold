@@ -34,7 +34,6 @@ async function get(
     const user = req.query.user
     const collection = req.query.collection
     const metadata = req.query.metadata
-    const editionInfo = req.query.editionInfo
     const network = req.query.network
 
     const connection = getConnection(network)
