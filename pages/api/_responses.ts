@@ -6,10 +6,7 @@ export interface MissingArgsResponse {
     args: string[],
     error: string
 }
-export interface SuccessResponse {
-    success: boolean
-    message?: string
-}
+
 export interface AuthorizationFailureResponse {
     message: string,
     error: string

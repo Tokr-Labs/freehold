@@ -5,7 +5,6 @@ export interface GetOwnedNftsRequest extends NextApiRequest {
         user: string,
         collection?: string,
         metadata?: string,
-        editionInfo?: string,
         network?: string
     };
 }
@@ -21,12 +20,5 @@ export interface PostPrintNftRequest extends NextApiRequest {
     query: {
         masterEdition: string,
         to?: string
-    }
-}
-
-export interface PostTransferRequest extends NextApiRequest {
-    query: {
-        token: string,
-        to: string
     }
 }
