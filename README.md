@@ -52,6 +52,9 @@ Notes and resources:
 ## Roadmap
 
 ## Contributing
+All contributors are expected to abide by the [Code of Conduct](https://github.com/Tokr-Labs/freehold/blob/4cf0679dc8ba5b8a9d56c6398984083852dfe260/CODE_OF_CONDUCT.md).
+
+A formal `CONTRIBUTING.md` document is currently being worked on. 
 
 ## License
 Copywright © 2022 Tokr Labs
