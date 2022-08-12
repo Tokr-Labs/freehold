@@ -40,6 +40,13 @@ Notes and resources:
 
 
 ## Tech Stack
+- [Next.js](https://nextjs.org/) (React framework)
+- [NextUI](https://nextui.org/) (UI component library and theming)
+- [React Icons](https://github.com/react-icons/react-icons) (iconography)
+- [Metaplex](https://www.metaplex.com/) (NFT SDK)
+- [Solflare](https://github.com/solflare-wallet/solana-pfp) (PFP program and SDK)
+- [Solana Labs](https://github.com/solana-labs/wallet-adapter) (wallet adapter)
+- [Vercel](https://vercel.com/) (hosting and deployments)
 
 ## Roadmap
 
