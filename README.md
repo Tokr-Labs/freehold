@@ -1,5 +1,5 @@
 # Freehold - Solana NFTs made easy
-## Overview
+## 🔮 Overview
 Freehold is an NFT service that aims to make the creation and exploration of NFTs on the Solana blockchain as easy as possible. While existing solutions predominantly focus on catering to generative art projects, Freehold is focused on unlocking the utility of NFTs. 
 
 Current features include:
@@ -12,7 +12,7 @@ As an example of the last bullet point above, [Rhove](https://rhove.com) utilize
 
 There are big plans in store for Freehold's future. View our [Roadmap](#roadmap) section to learn more.
 
-## Running Locally
+## 🧑‍💻 Running Locally
 In order to run this repository locally, you must first copy the contents of `.env.sample` to `.env.local`. The only required environment variables are `NEXT_PUBLIC_RPC_DEVNET` and `NEXT_PUBLIC_RPC_MAINNET_BETA` which have the publicly available RPC nodes from the Solana Foundation included by default.
 
 If you wish to utilize the built-in API, the `SOLANA_PRIVATE_KEY` variable will also need set. To prevent unauthorized access to the endpoints that interact with that private key, basic auth credentials can be set via the `BASIC_AUTH_USER` and `BASIC_AUTH_PASSWORD` variables.
@@ -30,7 +30,7 @@ wait  - compiling...
 event - compiled client and server successfully in 1770 ms (1813 modules)
 ```
 
-## Repository Structure
+## 📑 Repository Structure
 Top-level directories:
 ```text
 ├── components/      # Reusable React components
@@ -45,10 +45,10 @@ Top-level directories:
 Notes and resources:
 - Next.js file-based [page routing](https://nextjs.org/docs/basic-features/pages) and [API endpoints](https://nextjs.org/docs/api-routes/introduction)
 - Filenames beginning with an underscore within the `pages/` directory are excluded from showing up as a page or API endpoint
-- The `utils/` directory includes functions that are able to be used within the API endpoint files (which cannot utilized contexts or hooks as they are not React components) 
+- The `utils/` directory includes functions that are able to be used within the API endpoint files (which cannot utilize contexts or hooks as they are not React components) 
 
 
-## Tech Stack
+## 🦾 Tech Stack
 | **Library**     | **Repository link**                                                         | **Description**                  |
 |-----------------|-----------------------------------------------------------------------------|----------------------------------|
 | **Next.js**     | [vercel/next.js](https://github.com/vercel/next.js)                         | React framework                  |
@@ -59,7 +59,7 @@ Notes and resources:
 | **Solana Labs** | [solana-lab/wallet-adapter](https://github.com/solana-labs/wallet-adapter)  | Walllet Adapter                  |
 | **Vercel**      | [vercel](https://github.com/vercel)                                         | Hosting and deployments          |
 
-## Roadmap
+## 🚀 Roadmap
 Here's a sneak peek of what we plan to grow Freehold into:
 * [ ] Ability to create collection NFTs that adhere to the new standard introduced in Metaplex v1.3
 * [ ] Usable NFTs for communities that wish to create their own utility
@@ -69,12 +69,12 @@ Here's a sneak peek of what we plan to grow Freehold into:
 
 Have an idea that isn't listed here? We'd love to hear about it! Please create a post in the discussion board.
 
-## Contributing
+## 🙌 Contributing
 All contributors are expected to abide by the [Code of Conduct](https://github.com/Tokr-Labs/freehold/blob/4cf0679dc8ba5b8a9d56c6398984083852dfe260/CODE_OF_CONDUCT.md).
 
 A formal `CONTRIBUTING.md` document is currently being worked on. 
 
-## License
+## ⚖️ License
 Copywright © 2022 Tokr Labs
 
 Licensed under the Apache License, Version 2.0 (the "License");
