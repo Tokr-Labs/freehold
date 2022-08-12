@@ -22,6 +22,22 @@ event - compiled client and server successfully in 1770 ms (1813 modules)
 ```
 
 ## Repository Structure
+Top-level directories:
+```text
+├── components/      # Reusable React components
+├── contexts/        # Custom React contexts
+├── pages/           # File-based page routing, see next.js docs for more info
+│    └── api/        # File-based API endpoints, see next.js docs for more info
+├── public/          # Publicly available files such as images and logos
+├── styles/          # Theming related files (light mode, dark mode, and global)
+└── utils/           # Utility functions for the API
+```
+
+Notes and resources:
+- Next.js file-based [page routing](https://nextjs.org/docs/basic-features/pages) and [API endpoints](https://nextjs.org/docs/api-routes/introduction)
+- Filenames beginning with an underscore within the `pages/` directory are excluded from showing up as a page or API endpoint
+- The `utils/` directory includes functions that are able to be used within the API endpoint files (which cannot utilized contexts or hooks as they are not React components) 
+
 
 ## Tech Stack
 
