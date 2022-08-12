@@ -18,7 +18,6 @@ ready - started server on 0.0.0.0:3000, url: http://localhost:3000
 info  - Loaded env from [...]/freehold/.env.local
 wait  - compiling...
 event - compiled client and server successfully in 1770 ms (1813 modules)
-
 ```
 
 ## Repository Structure
@@ -40,13 +39,15 @@ Notes and resources:
 
 
 ## Tech Stack
-- [Next.js](https://nextjs.org/) (React framework)
-- [NextUI](https://nextui.org/) (UI component library and theming)
-- [React Icons](https://github.com/react-icons/react-icons) (iconography)
-- [Metaplex](https://www.metaplex.com/) (NFT SDK)
-- [Solflare](https://github.com/solflare-wallet/solana-pfp) (PFP program and SDK)
-- [Solana Labs](https://github.com/solana-labs/wallet-adapter) (wallet adapter)
-- [Vercel](https://vercel.com/) (hosting and deployments)
+| **Library**     | **Repository link**                                                         | **Description**                  |
+|-----------------|-----------------------------------------------------------------------------|----------------------------------|
+| **Next.js**     | [vercel/next.js](https://github.com/vercel/next.js)                         | React framework                  |
+| **NextUI**      | [nextui-org/nextui](https://github.com/nextui-org/nextui)                   | UI component library and theming | 
+| **React Icons** | [react-icons/react-icons](https://github.com/react-icons/react-icons)       | Iconography                      |
+| **Metaplex**    | [metaplex-foundation/js](https://github.com/metaplex-foundation/js)         | NFT SDK                          |
+| **Solflare**    | [solflare-wallet/solana-pfp](https://github.com/solflare-wallet/solana-pfp) | PFP program and SDK              |
+| **Solana Labs** | [solana-lab/wallet-adapter](https://github.com/solana-labs/wallet-adapter)  | Walllet Adapter                  |
+| **Vercel**      | [vercel](https://github.com/vercel)                                         | Hosting and deployments          |
 
 ## Roadmap
 
