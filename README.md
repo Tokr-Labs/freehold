@@ -60,6 +60,14 @@ Notes and resources:
 | **Vercel**      | [vercel](https://github.com/vercel)                                         | Hosting and deployments          |
 
 ## Roadmap
+Here's a sneak peek of what we plan to grow Freehold into:
+* [ ] Ability to create collection NFTs that adhere to the new standard introduced in Metaplex v1.3
+* [ ] Usable NFTs for communities that wish to create their own utility
+* [ ] Collection analysis tools (e.g., metadata insight, distribution, transfer tracking, etc.)
+* [ ] Bulk action tool (e.g., printing many editions at once, burning junk NFTs to recover SOL, etc.)
+* [ ] On-chain programs to facilitate more advanced functionality
+
+Have an idea that isn't listed here? We'd love to hear about it! Please create a post in the discussion board.
 
 ## Contributing
 All contributors are expected to abide by the [Code of Conduct](https://github.com/Tokr-Labs/freehold/blob/4cf0679dc8ba5b8a9d56c6398984083852dfe260/CODE_OF_CONDUCT.md).
