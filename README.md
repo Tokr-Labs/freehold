@@ -1,6 +1,16 @@
 # Freehold - Solana NFTs made easy
 ## Overview
+Freehold is an NFT service that aims to make the creation and exploration of NFTs on the Solana blockchain as easy as possible. While existing solutions predominantly focus on catering to generative art projects, Freehold is focused on unlocking the utility of NFTs. 
 
+Current features include:
+- A simple UI for creating NFTs with custom metadata
+- Automatic collection verification
+- The ability to set an NFT as a global Solana PFP
+- An easy-to-use API that enables automated edition printing
+
+As an example of the last bullet point above, [Rhove](https://rhove.com) utilizes Freehold's API to reward investors on its platform with an editioned NFT commemorating their investment. A separate party could then also utilize Freehold's API to filter a user's owned NFTs to just those matching the Rhove collection and provide additional utility if there's a match.
+
+There are big plans in store for Freehold's future. View our [Roadmap](#roadmap) section to learn more.
 
 ## Running Locally
 In order to run this repository locally, you must first copy the contents of `.env.sample` to `.env.local`. The only required environment variables are `NEXT_PUBLIC_RPC_DEVNET` and `NEXT_PUBLIC_RPC_MAINNET_BETA` which have the publicly available RPC nodes from the Solana Foundation included by default.
