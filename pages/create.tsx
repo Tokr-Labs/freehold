@@ -14,13 +14,13 @@ import {
     Text,
     Textarea, theme
 } from "@nextui-org/react";
-import {useWallet} from "@solana/wallet-adapter-react";
+import {useConnection, useWallet} from "@solana/wallet-adapter-react";
 import {
     CreateNftInput,
     findMasterEditionV2Pda,
     findMetadataPda,
     Nft,
-    useMetaplexFileFromBrowser,
+    toMetaplexFileFromBrowser,
     walletAdapterIdentity
 } from "@metaplex-foundation/js";
 import PageWrapper from "../components/page-wrapper";
@@ -29,6 +29,7 @@ import {PublicKey, Transaction} from "@solana/web3.js";
 import {createSetAndVerifyCollectionInstruction} from "@metaplex-foundation/mpl-token-metadata";
 import {BsFillCheckCircleFill, BsXCircleFill} from "react-icons/bs";
 import Link from "next/link";
+import {NetworkContext} from "../contexts/network-context";
 
 enum ProgressStatus {
     Pending,  // Not yet submitted
@@ -76,6 +77,7 @@ const ProgressItem = (props: { progress: ProgressStatus, text: string }) => {
 const Create: NextPage = () => {
 
     const walletAdapter = useWallet();
+    const {network} = useContext(NetworkContext)
 
     // TODO - why does the wallet adapter identity need to be set again here?
     const mx = useContext(MetaplexContext).use(walletAdapterIdentity(walletAdapter));
@@ -98,18 +100,20 @@ const Create: NextPage = () => {
     const createNft = async () => {
 
         // Uploading metadata
-        const {uri} = await mx.nfts().uploadMetadata({
-            name,
-            symbol,
-            description,
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            image: await useMetaplexFileFromBrowser(image!),
-            seller_fee_basis_points: 0,
-        }).catch(() => {
-            console.error("Metadata upload failed")
-            setMetadataUploadProgress(ProgressStatus.Failed)
-            throw new Error("Metadata upload failed")
-        })
+        const {uri} = await mx.nfts()
+            .uploadMetadata({
+                name,
+                symbol,
+                description,
+                image: await toMetaplexFileFromBrowser(image!),
+                seller_fee_basis_points: 0,
+            })
+            .run()
+            .catch(() => {
+                console.error("Metadata upload failed")
+                setMetadataUploadProgress(ProgressStatus.Failed)
+                throw new Error("Metadata upload failed")
+            })
 
         if (uri) {
             console.log(`Uploaded metadata (URI: ${uri})`)
@@ -118,19 +122,22 @@ const Create: NextPage = () => {
         }
 
         // Creating NFT
-        const {nft} = await mx.nfts().create({
+        const {nft} = await mx.nfts()
+            .create({
                 uri,
+                name,
                 isMutable,
                 maxSupply: unlimitedSupply ? undefined : maxSupply
-            } as CreateNftInput
-        ).catch(() => {
-            console.error("NFT creation failed")
-            setNftCreationProgress(ProgressStatus.Failed)
-            throw new Error("NFT creation failed")
-        })
+            })
+            .run()
+            .catch(() => {
+                console.error("NFT creation failed")
+                setNftCreationProgress(ProgressStatus.Failed)
+                throw new Error("NFT creation failed")
+            })
 
         if (nft) {
-            console.log(`Created NFT: ${nft.mint}`)
+            console.log(`Created NFT: ${nft.address}`)
             setNft(nft)
             setNftCreationProgress(ProgressStatus.Succeeded)
             if (collection) {
@@ -141,11 +148,13 @@ const Create: NextPage = () => {
         // If a collection was specified, attempting to set and verify it on the NFT
         if (collection) {
 
-            const collectionNft = await mx.nfts().findByMint(new PublicKey(collection))
+            const collectionNft = await mx.nfts()
+                .findByMint(new PublicKey(collection))
+                .run()
 
-            const nftMetadataAccount = await findMetadataPda(nft.mint)
-            const masterEditionAccount = await findMasterEditionV2Pda(collectionNft.mint)
-            const collectionMetadataAccount = await findMetadataPda(collectionNft.mint)
+            const nftMetadataAccount = await findMetadataPda(nft.address)
+            const masterEditionAccount = await findMasterEditionV2Pda(collectionNft.address)
+            const collectionMetadataAccount = await findMetadataPda(collectionNft.address)
 
             const tx = new Transaction()
             tx.add(
@@ -162,7 +171,8 @@ const Create: NextPage = () => {
 
             console.log("About to send transaction to set and verify collection")
 
-            const txResponse = await mx.rpc().sendAndConfirmTransaction(tx, [mx.identity()])
+            const txResponse = await mx.rpc()
+                .sendAndConfirmTransaction(tx, [mx.identity()])
                 .catch(() => {
                     console.error("Collection setting and verification failed")
                     setCollectionVerificationProgress(ProgressStatus.Failed)
@@ -372,12 +382,13 @@ const Create: NextPage = () => {
 
                                     <Text>NFT Created! View on the explorer:</Text>
 
-                                    <Link href={`https://explorer.solana.com/address/${nft.mint}?cluster=${mx.cluster}`}>
+                                    <Link
+                                        href={`https://explorer.solana.com/address/${nft.address}?cluster=${network}`}>
                                         <a target={"_blank"} style={{
                                             color: theme.colors.primary.computedValue,
                                             fontSize: theme.fontSizes.sm.computedValue
                                         }}>
-                                            {nft.mint.toString()}
+                                            {nft.address.toString()}
                                         </a>
                                     </Link>
 

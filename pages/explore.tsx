@@ -51,8 +51,7 @@ const Explore: NextPage = () => {
                                         : ownedNfts &&
                                         <Grid.Container gap={2}>
                                             {ownedNfts.map((nft, index) => {
-                                                // @ts-ignore
-                                                const imageUri = nft.metadataTask.result?.image
+                                                const imageUri = nft.json?.image
                                                 if (imageUri) {
                                                     return (
                                                         <Grid key={index} direction={"column"}>

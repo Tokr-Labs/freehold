@@ -1,60 +1,35 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type {NextApiResponse} from "next";
-import {Nft} from "@metaplex-foundation/js";
-import {PublicKey, sendAndConfirmTransaction} from "@solana/web3.js";
-import {adminWallet, AUTHORIZATION_FAILED, signable_metaplex} from "../../_constants";
+import {PublicKey} from "@solana/web3.js";
 import {basicAuthMiddleware, corsMiddleware} from "../../../../utils/middleware";
-import {transferAdminNftTransaction} from "../../../../library/nft/transfer";
-import {GetPrintNftRequest, PostPrintNftRequest} from "../../_requests";
-import {AuthorizationFailureResponse, methodNotAllowedResponse, PrintNftResponse} from "../../_responses";
+import {PostPrintNftRequest} from "../../_requests";
+import {
+    AuthorizationFailureResponse,
+    methodNotAllowedResponse,
+    PrintNftResponse,
+    unauthorizedResponse
+} from "../../_responses";
 import {StatusCodes} from "http-status-codes";
 import {getConnection} from "../../../../utils/get-connection";
-import {getMetaplex} from "../../../../utils/get-metaplex";
+import {getAdminMetaplex} from "../../../../utils/get-admin-metaplex";
+import {Nft} from "@metaplex-foundation/js";
 
-// example POST:
-// api/nft/print/2eqiaDuGJNrBniLR2D9YADJfsC9FzyPnfo159L6LKR6G
-// creates a print NFT (copy) of the provided master NFT
 export default async function handler(
-    req: GetPrintNftRequest | PostPrintNftRequest,
+    req: PostPrintNftRequest,
     res: NextApiResponse
 ) {
     await corsMiddleware(["GET", "POST"], req, res)
 
     switch (req.method) {
 
-        case "GET":
-            return get(req, res)
-
         case "POST":
             return basicAuthMiddleware(req)
                 ? post(req, res)
-                : res.status(StatusCodes.UNAUTHORIZED).json(AUTHORIZATION_FAILED)
+                : unauthorizedResponse(res)
 
         default:
             methodNotAllowedResponse(res, req.method, ["GET", "POST"])
 
     }
-
-}
-
-async function get(
-    req: GetPrintNftRequest,
-    res: NextApiResponse<PrintNftResponse | AuthorizationFailureResponse>
-) {
-
-    const masterEdition = req.query.masterEdition
-
-    const mx = getMetaplex()
-
-    // @TODO: this route should actually return all print editions
-    const nft: Nft = await mx.nfts()
-        .findByMint(new PublicKey(masterEdition));
-
-    const responseBody: PrintNftResponse = {
-        masterEdition,
-        nft
-    }
-    return res.status(StatusCodes.OK).json(responseBody);
 
 }
 
@@ -67,34 +42,29 @@ async function post(
     const to = req.query.to
 
     const connection = getConnection()
-
-    const printNft: any = await signable_metaplex.nfts()
-        .printNewEdition(new PublicKey(masterEdition));
+    const adminMetaplex = getAdminMetaplex(connection)
 
     // TODO - better error handling
-    if (to) {
-        const tx = await transferAdminNftTransaction(
-            printNft.nft.mint,
-            new PublicKey(to)
-        );
+    const toAddress = to ? new PublicKey(to) : adminMetaplex.identity().publicKey
 
-        await sendAndConfirmTransaction(
-            connection,
-            tx,
-            [adminWallet]
-        );
+    const masterEditionNft: Nft = await adminMetaplex.nfts()
+        .findByMint(new PublicKey(masterEdition))
+        .run()
 
-        const responseBody: PrintNftResponse = {
-            masterEdition,
-            nft: printNft,
-            success: true,
-            message: `Minted ${printNft.nft.mint} to ${to}`
-        }
+    const printNft = await adminMetaplex.nfts()
+        .printNewEdition(masterEditionNft.address, {
+            newUpdateAuthority: masterEditionNft.updateAuthorityAddress,
+            newOwner: toAddress
+        })
+        .run()
 
-        return res.status(StatusCodes.OK).json(responseBody);
+    const responseBody: PrintNftResponse = {
+        masterEdition,
+        nft: printNft.nft,
+        success: true,
+        message: `Minted ${printNft.nft.address} to ${to}`
     }
 
-    return res.status(StatusCodes.OK).json({masterEdition, nft: printNft});
-
+    return res.status(StatusCodes.OK).json(responseBody);
 
 }

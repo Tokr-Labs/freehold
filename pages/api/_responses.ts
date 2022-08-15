@@ -1,4 +1,4 @@
-import {Nft} from "@metaplex-foundation/js";
+import {Metadata, Nft} from "@metaplex-foundation/js";
 import {NextApiResponse} from "next";
 import {StatusCodes} from "http-status-codes";
 
@@ -6,10 +6,7 @@ export interface MissingArgsResponse {
     args: string[],
     error: string
 }
-export interface SuccessResponse {
-    success: boolean
-    message?: string
-}
+
 export interface AuthorizationFailureResponse {
     message: string,
     error: string
@@ -25,8 +22,18 @@ export interface PrintNftResponse {
 
 export interface OwnedNftsResponse {
     user: string,
-    nfts: Nft[],
+    nfts: Nft[] | Metadata[],
     error?: string
+}
+
+export const unauthorizedResponse = (
+    res: NextApiResponse,
+) => {
+    const AUTHORIZATION_FAILED: AuthorizationFailureResponse = {
+        message: "Authorization Failed",
+        error: "Invalid authorization",
+    }
+    return res.status(StatusCodes.UNAUTHORIZED).json(AUTHORIZATION_FAILED)
 }
 
 export const methodNotAllowedResponse = (
