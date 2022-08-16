@@ -9,6 +9,15 @@ export interface GetOwnedNftsRequest extends NextApiRequest {
     };
 }
 
+export interface GetCreatedNftsRequest extends NextApiRequest {
+    query: {
+        user: string,
+        collection?: string,
+        metadata?: string,
+        network?: string
+    }
+}
+
 export interface GetPfpRequest extends NextApiRequest {
     query: {
         user: string,
