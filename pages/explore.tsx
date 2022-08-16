@@ -1,17 +1,21 @@
 import {NextPage} from "next";
 import PageWrapper from "../components/page-wrapper";
-import {Card, Container, Grid, Image, Spacer, Text} from "@nextui-org/react";
-import {useEffect, useState} from "react";
+import {Card, Container, Grid, Image, Loading, Spacer, Text} from "@nextui-org/react";
+import {useContext, useEffect, useState} from "react";
 import {useWallet} from "@solana/wallet-adapter-react";
 import {Nft} from "@metaplex-foundation/js";
-
+import {NetworkContext} from "../contexts/network-context";
 
 const Explore: NextPage = () => {
 
     const {connected, publicKey} = useWallet()
+    const {network} = useContext(NetworkContext)
 
     const [ownedNfts, setOwnedNfts] = useState<Nft[]>()
-    console.log(ownedNfts)
+    const [isOwnedNftsLoading, setIsOwnedNftsLoading] = useState<boolean>(false)
+
+    const [createdNfts, setCreatedNfts] = useState<Nft[]>()
+    const [isCreatedNftsLoading, setIsCreatedNftsLoading] = useState<boolean>(false)
 
     useEffect(() => {
 
@@ -20,12 +24,22 @@ const Explore: NextPage = () => {
             return;
         }
 
-        fetch(`/api/nft/owned?user=${publicKey}&metadata=true`)
+        setIsOwnedNftsLoading(true)
+        setIsCreatedNftsLoading(true)
+
+        fetch(`/api/nft/owned?user=${publicKey}&metadata=true&network=${network}`)
             .then(response => response.json())
             .then(json => setOwnedNfts(json.nfts))
+            .then(() => setIsOwnedNftsLoading(false))
             .catch(console.error)
 
-    }, [connected, publicKey])
+        fetch(`api/nft/created?user=${publicKey}&metadata=true&network=${network}`)
+            .then(response => response.json())
+            .then(json => setCreatedNfts(json.nfts))
+            .then(() => setIsCreatedNftsLoading(false))
+            .catch(console.error)
+
+    }, [connected, network, publicKey])
 
     return (
         <PageWrapper>
@@ -48,29 +62,27 @@ const Explore: NextPage = () => {
                                 {
                                     !connected
                                         ? <div>Connect your wallet!</div>
-                                        : ownedNfts &&
-                                        <Grid.Container gap={2}>
-                                            {ownedNfts.map((nft, index) => {
-                                                const imageUri = nft.json?.image
-                                                if (imageUri) {
-                                                    return (
-                                                        <Grid key={index} direction={"column"}>
-                                                            <Image
-                                                                src={imageUri}
-                                                                alt={"NFT image"}
-                                                                height={100}
-                                                                width={100}
-                                                                showSkeleton={true}
-                                                            />
-                                                            <p style={{textAlign: "center"}}>{nft.name}</p>
-                                                        </Grid>
-                                                    )
-                                                }
-
-                                                console.log("Could not fetch image for:", nft.name)
-                                                return;
-                                            })}
-                                        </Grid.Container>
+                                        : isOwnedNftsLoading
+                                            ? <Loading>Wallets with many owned NFTs may take awhile to load</Loading>
+                                            : ownedNfts && ownedNfts.length === 0
+                                                ? <Text>This wallet does not contain any {network} NFTs</Text>
+                                                : ownedNfts &&
+                                                <Grid.Container gap={2}>
+                                                    {ownedNfts.map((nft, index) => {
+                                                        return (
+                                                            <Grid key={index} direction={"column"}>
+                                                                <Image
+                                                                    src={nft.json?.image || "https://dummyimage.com/100x100/969696/ededed&text=Image+not+found"}
+                                                                    alt={"NFT image"}
+                                                                    height={100}
+                                                                    width={100}
+                                                                    showSkeleton={true}
+                                                                />
+                                                                <p style={{textAlign: "center"}}>{nft.name}</p>
+                                                            </Grid>
+                                                        )
+                                                    })}
+                                                </Grid.Container>
                                 }
                             </Card.Body>
 
@@ -88,7 +100,33 @@ const Explore: NextPage = () => {
                                 <Text h2 weight={"bold"}>Created</Text>
                             </Card.Header>
 
-                            <Card.Body>Coming soon</Card.Body>
+                            <Card.Body>
+                                {
+                                    !connected
+                                        ? <div>Connect your wallet!</div>
+                                        : isCreatedNftsLoading
+                                            ? <Loading>Wallets with many created NFTs may take awhile to load</Loading>
+                                            : createdNfts && createdNfts.length === 0
+                                                ? <Text>This wallet has not created any NFTs on {network}</Text>
+                                                : createdNfts &&
+                                                <Grid.Container gap={2}>
+                                                    {createdNfts.map((nft, index) => {
+                                                        return (
+                                                            <Grid key={index} direction={"column"}>
+                                                                <Image
+                                                                    src={nft.json?.image || "https://dummyimage.com/100x100/969696/ededed&text=Image+not+found"}
+                                                                    alt={"NFT image"}
+                                                                    height={100}
+                                                                    width={100}
+                                                                    showSkeleton={true}
+                                                                />
+                                                                <p style={{textAlign: "center"}}>{nft.name}</p>
+                                                            </Grid>
+                                                        )
+                                                    })}
+                                                </Grid.Container>
+                                }
+                            </Card.Body>
 
                             <Card.Footer/>
 
