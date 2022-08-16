@@ -4,7 +4,8 @@ import {
     Button,
     Card,
     Checkbox,
-    Container, Divider,
+    Container,
+    Divider,
     Grid,
     Image,
     Input,
@@ -12,11 +13,11 @@ import {
     Modal,
     Spacer,
     Text,
-    Textarea, theme
+    Textarea,
+    theme
 } from "@nextui-org/react";
-import {useConnection, useWallet} from "@solana/wallet-adapter-react";
+import {useWallet} from "@solana/wallet-adapter-react";
 import {
-    CreateNftInput,
     findMasterEditionV2Pda,
     findMetadataPda,
     Nft,
@@ -354,7 +355,7 @@ const Create: NextPage = () => {
                         >
 
                             <Modal.Header>
-                                <Text h3 weight={"bold"}>Creating NFT</Text>
+                                <Text h3 weight={"bold"}>Creating NFT ({network})</Text>
                             </Modal.Header>
 
                             <Modal.Body>
