@@ -26,6 +26,12 @@ export interface OwnedNftsResponse {
     error?: string
 }
 
+export interface CreatedNftsResponse {
+    user: string,
+    nfts: Nft[] | Metadata[],
+    error?: string
+}
+
 export const unauthorizedResponse = (
     res: NextApiResponse,
 ) => {
