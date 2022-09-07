@@ -128,7 +128,7 @@ const Create: NextPage = () => {
                 uri,
                 name,
                 isMutable,
-                maxSupply: unlimitedSupply ? undefined : maxSupply
+                maxSupply: unlimitedSupply ? null : maxSupply
             })
             .run()
             .catch(() => {
