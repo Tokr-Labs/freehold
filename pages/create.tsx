@@ -206,7 +206,12 @@ const Create: NextPage = () => {
         setIsModalVisible(true)
     }
 
+    // Resetting progress state on modal close
     const closeModal = () => {
+        setNft(undefined)
+        setMetadataUploadProgress(ProgressStatus.Pending)
+        setNftCreationProgress(ProgressStatus.Pending)
+        setCollectionVerificationProgress(ProgressStatus.Pending)
         setIsModalVisible(false)
     }
 
@@ -348,10 +353,11 @@ const Create: NextPage = () => {
                     <Grid xs={12} justify={"flex-end"}>
 
                         <Modal
+                            preventClose
+                            width={"425px"}
                             closeButton={true}
                             open={isModalVisible}
                             onClose={closeModal}
-                            width={"425px"}
                         >
 
                             <Modal.Header>
